@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Surely</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+  
+  <div class="auth-container">
+    <div class="auth-card">
+      <!-- Logo -->
+      <div class="auth-logo">
+        <svg viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="18" fill="#DC143C"/>
+          <path d="M20 8 L12 24 L28 24 Z" fill="white"/>
+          <circle cx="20" cy="28" r="3" fill="white"/>
+        </svg>
+        <span>SURELY</span>
+      </div>
+      
+      <!-- Title -->
+      <div class="auth-header">
+        <h1>WELCOME BACK</h1>
+        <p>Login to access your account and premium betting codes</p>
+      </div>
+      
+      <!-- Alert Messages -->
+      <div id="alert-container"></div>
+      
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-input" 
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+          >
+          <span class="form-error" id="email-error"></span>
+        </div>
+        
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="password-input-wrapper">
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form-input" 
+              placeholder="Enter your password"
+              required
+              autocomplete="current-password"
+            >
+            <button type="button" class="password-toggle" onclick="togglePassword()">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
+              </svg>
+            </button>
+          </div>
+          <span class="form-error" id="password-error"></span>
+        </div>
+        
+        <div class="form-options">
+          <label class="form-checkbox">
+            <input type="checkbox" id="remember-me" name="rememberMe">
+            <span>Remember me</span>
+          </label>
+          
+          <a href="#" class="forgot-password">Forgot Password?</a>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">
+          <span id="btn-text">Login</span>
+          <span id="btn-loading" class="loading hidden"></span>
+        </button>
+      </form>
+      
+      <!-- Divider -->
+      <div class="auth-divider">
+        <span>OR</span>
+      </div>
+      
+      <!-- Social Login (Optional - for future implementation) -->
+      <div class="social-login">
+        <button class="btn btn-secondary btn-block" disabled>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 0C4.477 0 0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.879V12.89h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.989C16.343 19.129 20 14.99 20 10c0-5.523-4.477-10-10-10z"/>
+          </svg>
+          Continue with Google (Coming Soon)
+        </button>
+      </div>
+      
+      <!-- Register Link -->
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="./register.html" class="text-primary">Sign Up</a></p>
+        <p><a href="../index.html" class="text-secondary">← Back to Home</a></p>
+      </div>
+    </div>
+    
+    <!-- Side Panel -->
+    <div class="auth-side">
+      <div class="side-content">
+        <h2>START WINNING TODAY</h2>
+        <p>Join thousands of smart bettors using AI-powered predictions and expert insights to maximize their winning potential.</p>
+        
+        <div class="side-features">
+          <div class="side-feature">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L15 8L22 9L17 14L19 21L12 17L5 21L7 14L2 9L9 8L12 2Z"/>
+            </svg>
+            <span>AI-Powered Predictions</span>
+          </div>
+          
+          <div class="side-feature">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            <span>Real-Time Updates</span>
+          </div>
+          
+          <div class="side-feature">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+            </svg>
+            <span>Premium Bet Codes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/config.js"></script>
+  <script src="../js/security.js"></script>
+  <script src="../services/api.service.js"></script>
+  <script src="../services/auth.service.js"></script>
+  <script src="../js/router.js"></script>
+  <script src="../js/login.js"></script>
+</body>
+</html>
