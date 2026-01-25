@@ -36,17 +36,30 @@ async function handleLogin() {
   setLoading(true);
   
   try {
+    console.log('Attempting login with email:', email);
+    
     // Attempt login
     const response = await authService.login(email, password, rememberMe);
+    
+    console.log('Login response:', response);
     
     if (response.success) {
       showAlert('Login successful! Redirecting...', 'success');
       
       // Redirect after short delay
       setTimeout(() => {
-        const redirectPath = routerService.getRedirectPath();
+        console.log('Redirecting to profile...');
+        
+        // Use relative path since we're in /pages/login.html
+        const redirectPath = './profile.html';
+        
+        console.log('Redirect path:', redirectPath);
+        console.log('Current location:', window.location.href);
+        
         window.location.href = redirectPath;
       }, 1000);
+    } else {
+      throw new Error('Login failed');
     }
     
   } catch (error) {
@@ -99,3 +112,8 @@ function setLoading(loading) {
   btnText.classList.toggle('hidden', loading);
   btnLoading.classList.toggle('hidden', !loading);
 }
+
+// Debug: Log when page loads
+console.log('Login page loaded');
+console.log('Current location:', window.location.href);
+console.log('Is authenticated:', securityManager.isAuthenticated());

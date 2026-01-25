@@ -164,7 +164,7 @@ class APIService {
   }
 
   /**
-   * PATCH request
+   * PATCH request (JSON)
    */
   async patch(endpoint, data = {}, includeAuth = true) {
     const url = `${this.baseURL}${endpoint}`;
@@ -176,6 +176,40 @@ class APIService {
       method: 'PATCH',
       headers,
       body: JSON.stringify(sanitizedData)
+    });
+  }
+
+  /**
+   * PATCH request with form data (for password updates, etc.)
+   * Matches mobile app's form-based PATCH requests
+   */
+  async patchForm(endpoint, data = {}, includeAuth = true) {
+    const url = `${this.baseURL}${endpoint}`;
+    const token = securityManager.getToken();
+    
+    const headers = {
+      'X-CSRF-Token': securityManager.getCSRFToken()
+    };
+
+    if (includeAuth && token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Build URL-encoded form data
+    const formData = new URLSearchParams();
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value.toString());
+      }
+    }
+
+    return this.makeRequest(url, {
+      method: 'PATCH',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: formData.toString()
     });
   }
 

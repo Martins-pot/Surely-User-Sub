@@ -10,22 +10,77 @@ class AuthService {
   }
 
   /**
-   * Load current user from storage
+   * Load current user from storage or API
    */
   async loadCurrentUser() {
     if (securityManager.isAuthenticated()) {
+      // First check if we have user data in sessionStorage (from recent login)
+      const cachedUser = this.getCachedUser();
+      if (cachedUser) {
+        this.currentUser = cachedUser;
+        return this.currentUser;
+      }
+
+      // Try to fetch from API using /user/me endpoint
       try {
         const response = await apiService.get(CONFIG.ENDPOINTS.USER.PROFILE);
-        if (response.success) {
+        if (response.success && response.data) {
           this.currentUser = response.data;
+          this.cacheUser(this.currentUser);
           return this.currentUser;
         }
       } catch (error) {
         console.error('Failed to load user profile:', error);
-        securityManager.clearToken();
+        
+        // If profile endpoint fails but we're authenticated, 
+        // use cached data if available
+        if (cachedUser) {
+          this.currentUser = cachedUser;
+          return this.currentUser;
+        }
+        
+        // Only clear token if it's actually an auth error
+        if (error.message && error.message.includes('Session expired')) {
+          securityManager.clearToken();
+        }
       }
     }
     return null;
+  }
+
+  /**
+   * Cache user data in sessionStorage
+   */
+  cacheUser(user) {
+    try {
+      sessionStorage.setItem('__surely_user__', JSON.stringify(user));
+    } catch (error) {
+      console.error('Failed to cache user data:', error);
+    }
+  }
+
+  /**
+   * Get cached user data
+   */
+  getCachedUser() {
+    try {
+      const cached = sessionStorage.getItem('__surely_user__');
+      return cached ? JSON.parse(cached) : null;
+    } catch (error) {
+      console.error('Failed to retrieve cached user:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Clear cached user data
+   */
+  clearCachedUser() {
+    try {
+      sessionStorage.removeItem('__surely_user__');
+    } catch (error) {
+      console.error('Failed to clear cached user:', error);
+    }
   }
 
   /**
@@ -69,7 +124,7 @@ class AuthService {
 
       if (response.success) {
         // Auto-login after successful registration
-        if (response.data.token) {
+        if (response.data.token || response.data.access_token) {
           this.handleAuthSuccess(response.data, userData.rememberMe);
         }
         return response;
@@ -103,8 +158,15 @@ class AuthService {
         false // No auth needed for login
       );
 
-      if (response.success && response.data.token) {
-        this.handleAuthSuccess(response.data, rememberMe);
+      if (response.success && response.data.access_token) {
+        this.handleAuthSuccess(
+          {
+            token: response.data.access_token,
+            user: response.data.user,
+            expiresIn: response.data.expires_in ?? 3600
+          },
+          rememberMe
+        );
         return response;
       }
 
@@ -121,10 +183,12 @@ class AuthService {
   handleAuthSuccess(authData, rememberMe = false) {
     // Store token securely
     const expiresIn = authData.expiresIn || 3600; // Default 1 hour
-    securityManager.storeToken(authData.token, expiresIn, rememberMe);
+    const token = authData.token || authData.access_token;
+    securityManager.storeToken(token, expiresIn, rememberMe);
 
     // Store user data
     this.currentUser = authData.user || authData;
+    this.cacheUser(this.currentUser);
 
     // Dispatch custom event for auth state change
     window.dispatchEvent(new CustomEvent('authStateChanged', {
@@ -150,21 +214,34 @@ class AuthService {
       // Clear local state
       securityManager.clearToken();
       this.currentUser = null;
+      this.clearCachedUser();
 
       // Dispatch custom event
       window.dispatchEvent(new CustomEvent('authStateChanged', {
         detail: { user: null, authenticated: false }
       }));
 
-      // Redirect to login
-      window.location.href = '/pages/login.html';
+      // Redirect to login - use relative path if in pages directory
+      const currentPath = window.location.pathname;
+      if (currentPath.includes('/pages/')) {
+        window.location.href = './login.html';
+      } else {
+        window.location.href = '/pages/login.html';
+      }
 
     } catch (error) {
       console.error('Logout error:', error);
       // Force logout anyway
       securityManager.clearToken();
       this.currentUser = null;
-      window.location.href = '/pages/login.html';
+      this.clearCachedUser();
+      
+      const currentPath = window.location.pathname;
+      if (currentPath.includes('/pages/')) {
+        window.location.href = './login.html';
+      } else {
+        window.location.href = '/pages/login.html';
+      }
     }
   }
 
@@ -172,6 +249,9 @@ class AuthService {
    * Get current user
    */
   getCurrentUser() {
+    if (!this.currentUser) {
+      this.currentUser = this.getCachedUser();
+    }
     return this.currentUser;
   }
 
@@ -179,7 +259,7 @@ class AuthService {
    * Check if user is authenticated
    */
   isAuthenticated() {
-    return securityManager.isAuthenticated() && this.currentUser !== null;
+    return securityManager.isAuthenticated() && this.getCurrentUser() !== null;
   }
 
   /**
@@ -189,10 +269,11 @@ class AuthService {
     try {
       const response = await apiService.post(CONFIG.ENDPOINTS.AUTH.REFRESH);
       
-      if (response.success && response.data.token) {
-        const expiresIn = response.data.expiresIn || 3600;
+      if (response.success && (response.data.token || response.data.access_token)) {
+        const token = response.data.token || response.data.access_token;
+        const expiresIn = response.data.expiresIn || response.data.expires_in || 3600;
         const rememberMe = localStorage.getItem(CONFIG.TOKEN_KEY) !== null;
-        securityManager.storeToken(response.data.token, expiresIn, rememberMe);
+        securityManager.storeToken(token, expiresIn, rememberMe);
         return true;
       }
       
@@ -208,14 +289,20 @@ class AuthService {
    */
   async updateProfile(profileData) {
     try {
-      const response = await apiService.put(
-        CONFIG.ENDPOINTS.USER.UPDATE,
+      const userId = this.currentUser?.userId || this.currentUser?.user_id;
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+
+      const response = await apiService.patch(
+        `${CONFIG.ENDPOINTS.USER.UPDATE}/${userId}`,
         profileData
       );
 
       if (response.success) {
-        // Update current user
-        this.currentUser = { ...this.currentUser, ...response.data };
+        // Update current user with new data
+        this.currentUser = { ...this.currentUser, ...profileData };
+        this.cacheUser(this.currentUser);
         
         // Dispatch update event
         window.dispatchEvent(new CustomEvent('profileUpdated', {
@@ -243,12 +330,15 @@ class AuthService {
         throw new Error('New password does not meet requirements');
       }
 
-      const response = await apiService.post(
-        CONFIG.ENDPOINTS.USER.CHANGE_PASSWORD,
-        {
-          currentPassword,
-          newPassword
-        }
+      const userId = this.currentUser?.userId || this.currentUser?.user_id;
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+
+      // Mobile app uses form data with 'password' field
+      const response = await apiService.patchForm(
+        `${CONFIG.ENDPOINTS.USER.CHANGE_PASSWORD}/${userId}`,
+        { password: newPassword }
       );
 
       return response;

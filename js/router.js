@@ -42,13 +42,13 @@ class RouterService {
       sessionStorage.setItem('redirectAfterLogin', currentPath + window.location.search);
       
       // Redirect to login
-      this.navigate('/pages/login.html');
+      this.navigate('./login.html', true);
       return false;
     }
 
     // If authenticated and on login/register page, redirect to profile
     if (securityManager.isAuthenticated() && this.isAuthPage(currentPath)) {
-      this.navigate('/pages/profile.html');
+      this.navigate('./profile.html', true);
       return false;
     }
 
@@ -60,9 +60,9 @@ class RouterService {
    */
   isProtectedRoute(path) {
     const protectedPaths = [
-      '/pages/profile.html',
-      '/pages/subscription.html',
-      '/pages/dashboard.html'
+      'profile.html',
+      'subscription.html',
+      'dashboard.html'
     ];
 
     return protectedPaths.some(protectedPath => path.includes(protectedPath));
@@ -72,14 +72,20 @@ class RouterService {
    * Check if route is an auth page
    */
   isAuthPage(path) {
-    const authPaths = ['/pages/login.html', '/pages/register.html'];
+    const authPaths = ['login.html', 'register.html'];
     return authPaths.some(authPath => path.includes(authPath));
   }
 
   /**
    * Navigate to a route
+   * Handles both relative and absolute paths intelligently
    */
   navigate(path, replace = false) {
+    // If path doesn't start with . or /, make it relative
+    if (!path.startsWith('.') && !path.startsWith('/') && !path.startsWith('http')) {
+      path = './' + path;
+    }
+    
     if (replace) {
       window.location.replace(path);
     } else {
@@ -96,11 +102,23 @@ class RouterService {
 
   /**
    * Get redirect path after login
+   * Returns relative path from pages directory
    */
   getRedirectPath() {
     const redirect = sessionStorage.getItem('redirectAfterLogin');
     sessionStorage.removeItem('redirectAfterLogin');
-    return redirect || '/pages/profile.html';
+    
+    // If there's a stored redirect, check if it's in pages
+    if (redirect && redirect.includes('profile.html')) {
+      return './profile.html';
+    } else if (redirect && redirect.includes('subscription.html')) {
+      return './subscription.html';
+    } else if (redirect && redirect.includes('dashboard.html')) {
+      return './dashboard.html';
+    }
+    
+    // Default to profile page (relative path)
+    return './profile.html';
   }
 
   /**

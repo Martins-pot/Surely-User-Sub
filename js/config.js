@@ -17,27 +17,12 @@ const CONFIG = {
   SESSION_TIMEOUT: 3600000, // 1 hour
   REMEMBER_ME_DURATION: 2592000000, // 30 days
   
-  // Flutterwave Configuration
-  FLUTTERWAVE_PUBLIC_KEY: 'FLWPUBK-xxxxxxxxxxxxxxxxxxxxxxxxx', // Replace with actual key
+  // Payment Configuration (TEST MODE)
+  // NOTE: Plans and pricing are fetched dynamically from backend based on user country
+  // Do NOT hardcode prices or currency symbols
   
-  // Subscription Plans
-  SUBSCRIPTION_PLANS: {
-    MONTHLY: {
-      name: 'Pro Monthly',
-      price: 2000,
-      currency: 'NGN',
-      interval: 'monthly',
-      description: 'All features. Full power.'
-    },
-    ANNUAL: {
-      name: 'Pro Annual',
-      price: 21600,
-      currency: 'NGN',
-      interval: 'yearly',
-      description: '₦1,800/month — Best Value',
-      savings: '10%'
-    }
-  },
+  // Country Detection
+  DEFAULT_COUNTRY: 'NG', // Default to Nigeria if detection fails
   
   // Route Configuration
   ROUTES: {
@@ -45,36 +30,63 @@ const CONFIG = {
     PROTECTED: ['/profile', '/subscription', '/dashboard']
   },
   
-  // API Endpoints (Based on standard REST conventions)
-  // TODO: Verify these against actual Postman documentation
+  // API Endpoints
+  // Based on working mobile app endpoints
   ENDPOINTS: {
     AUTH: {
-      REGISTER: '/api/auth/register',
-      LOGIN: '/api/auth/login',
-      LOGOUT: '/api/auth/logout',
-      REFRESH: '/api/auth/refresh',
-      VERIFY: '/api/auth/verify'
+      LOGIN: '/user/login',
+      REGISTER: '/user/register',
+      LOGOUT: '/user/logout',        
+      REFRESH: '/user/refresh-token' 
     },
     USER: {
-      PROFILE: '/api/user/profile',
-      UPDATE: '/api/user/update',
-      CHANGE_PASSWORD: '/api/user/change-password'
+      PROFILE: '/user/me',                // Get current user
+      UPDATE: '/user/update',             // Update user (requires userId appended)
+      CHANGE_PASSWORD: '/user/update',    // Change password (requires userId appended)
+      DELETE: '/user/delete',             // Delete account (requires userId appended)
+      GET_DETAILS: '/user/get',           // Get user details by email/username
+      EXISTS: '/user/exists',             // Check if email/username exists
+      VERIFY_PASSWORD: '/user/verify/password' // Verify password (requires userId appended)
     },
+    // PAYMENT ENDPOINTS - Following backend contract exactly
+    PAYMENTS: {
+      PRICING: '/payments/pricing',        // GET - Fetch pricing by country (no auth)
+      INITIATE: '/payments/initiate',      // POST - Start payment (requires auth)
+      STATUS: '/payments/status',          // GET - Verify payment status (requires auth) - append /{reference}
+      ME: '/payments/me',                  // GET - Check current subscription (requires auth)
+      HISTORY: '/payments/history'         // GET - Payment history (requires auth)
+    },
+    // Legacy subscription endpoints (may be deprecated)
     SUBSCRIPTION: {
-      PLANS: '/api/subscription/plans',
-      SUBSCRIBE: '/api/subscription/subscribe',
-      STATUS: '/api/subscription/status',
-      CANCEL: '/api/subscription/cancel'
+      PLANS: '/subscription/plans',
+      SUBSCRIBE: '/subscription/subscribe',
+      STATUS: '/subscription/status',
+      CANCEL: '/subscription/cancel'
     },
     CODES: {
-      FREE: '/api/codes/free',
-      PREMIUM: '/api/codes/premium'
+      FREE: '/codes',                     // Get all codes (same as mobile)
+      PREMIUM: '/codes/premium',
+      BY_ID: '/codes'                     // Get code by ID (append /{id})
+    },
+    DEVICE: {
+      REGISTER: '/device/register',
+      LINK: '/device/link_user',
+      UNLINK: '/device/unlink_user'
+    },
+    OTP: {
+      SEND: '/otp/send',
+      VERIFY: '/user/verify'
+    },
+    ANALYTICS: {
+      TRACK: '/analytics/track'
+    },
+    BET_BUILDER: {
+      GENERATE: '/bet-builder'            // Append /{matchId}/generate
     }
   }
 };
 
 // Freeze configuration to prevent tampering
 Object.freeze(CONFIG);
-Object.freeze(CONFIG.SUBSCRIPTION_PLANS);
 Object.freeze(CONFIG.ROUTES);
 Object.freeze(CONFIG.ENDPOINTS);
