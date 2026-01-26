@@ -1,26 +1,26 @@
 /**
  * Surely - Main Stylesheet
- * Dark theme with red/black dominant colors, sporty design
+ * Light theme with maroon/burgundy primary color
  */
 
 /* ============================
    CSS VARIABLES & THEME
    ============================ */
 :root {
-  /* Primary Colors */
-  --color-primary: #DC143C;
-  --color-primary-dark: #A00F2A;
-  --color-primary-light: #FF1744;
+  /* Primary Colors - Maroon/Burgundy */
+  --color-primary: #a51d2a;
+  --color-primary-dark: #8b1a28;
+  --color-primary-light: #c72037;
   
-  /* Background Colors */
-  --color-bg-primary: #0A0A0A;
-  --color-bg-secondary: #1A1A1A;
-  --color-bg-tertiary: #2A2A2A;
-  --color-bg-card: #141414;
+  /* Background Colors - Light Theme */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F5F5F5;
+  --color-bg-tertiary: #F9F9F9;
+  --color-bg-card: #FFFFFF;
   
   /* Text Colors */
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: #B0B0B0;
+  --color-text-primary: #333333;
+  --color-text-secondary: #666666;
   --color-text-tertiary: #808080;
   
   /* Accent Colors */
@@ -29,21 +29,21 @@
   --color-accent-blue: #00B8FF;
   
   /* Status Colors */
-  --color-success: #00FF88;
+  --color-success: #4CAF50;
   --color-warning: #FFD700;
   --color-error: #FF1744;
   --color-info: #00B8FF;
   
   /* Border & Divider */
-  --color-border: #2A2A2A;
-  --color-divider: #1A1A1A;
+  --color-border: #E0E0E0;
+  --color-divider: #F0F0F0;
   
   /* Shadows */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.7);
-  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.8);
-  --shadow-glow: 0 0 20px rgba(220, 20, 60, 0.4);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.2);
+  --shadow-glow: 0 0 20px rgba(165, 29, 42, 0.3);
   
   /* Spacing */
   --spacing-xs: 0.5rem;
@@ -61,8 +61,8 @@
   --radius-full: 9999px;
   
   /* Typography */
-  --font-primary: 'Rajdhani', 'Bebas Neue', sans-serif;
-  --font-secondary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-secondary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'Courier New', monospace;
   
   /* Transitions */
@@ -103,17 +103,17 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: var(--spacing-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: var(--color-text-primary);
 }
 
 h1 {
   font-size: clamp(2.5rem, 5vw, 4rem);
-  letter-spacing: 1px;
+  font-weight: 900;
 }
 
 h2 {
   font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
 }
 
 h3 {
@@ -152,9 +152,9 @@ a:hover {
    ============================ */
 .container {
   width: 100%;
-  max-width: 1440px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 var(--spacing-md);
+  padding: 0 2rem;
 }
 
 .container-sm {
@@ -212,11 +212,11 @@ a:hover {
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(10, 10, 10, 0.95);
+  background: rgba(165, 29, 42, 0.95);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: none;
   z-index: 1000;
-  padding: var(--spacing-sm) 0;
+  padding: 1rem 0;
 }
 
 .navbar-content {
@@ -232,7 +232,7 @@ a:hover {
   font-family: var(--font-primary);
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: white;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -244,36 +244,27 @@ a:hover {
 
 .navbar-menu {
   display: flex;
-  gap: var(--spacing-lg);
+  gap: 2.5rem;
   list-style: none;
 }
 
 .navbar-menu a {
-  color: var(--color-text-secondary);
-  font-weight: 500;
-  transition: color var(--transition-fast);
+  color: white;
+  font-weight: 400;
+  font-size: 1rem;
+  opacity: 0.9;
+  transition: opacity var(--transition-fast);
   position: relative;
 }
 
 .navbar-menu a:hover,
 .navbar-menu a.active {
-  color: var(--color-primary);
+  opacity: 1;
 }
 
-.navbar-menu a::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--color-primary);
-  transition: width var(--transition-base);
-}
-
-.navbar-menu a:hover::after,
-.navbar-menu a.active::after {
-  width: 100%;
+.navbar-actions {
+  display: flex;
+  gap: 1rem;
 }
 
 /* ============================
@@ -284,14 +275,12 @@ a:hover {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-xs);
-  padding: 0.75rem 1.5rem;
+  padding: 0.7rem 1.5rem;
   font-family: var(--font-primary);
   font-size: 1rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 30px;
   cursor: pointer;
   transition: all var(--transition-base);
   text-decoration: none;
@@ -306,19 +295,19 @@ a:hover {
 
 .btn-primary:hover {
   background: var(--color-primary-light);
-  box-shadow: var(--shadow-glow);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .btn-secondary {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
+  background: transparent;
+  color: white;
+  border: 2px solid white;
 }
 
 .btn-secondary:hover {
-  background: var(--color-bg-secondary);
-  border-color: var(--color-primary);
+  background: white;
+  color: var(--color-primary);
 }
 
 .btn-outline {
@@ -334,7 +323,7 @@ a:hover {
 
 .btn-lg {
   padding: 1rem 2rem;
-  font-size: 1.125rem;
+  font-size: 1.1rem;
 }
 
 .btn-sm {
@@ -374,7 +363,7 @@ a:hover {
 .form-textarea {
   width: 100%;
   padding: 0.875rem 1rem;
-  background: var(--color-bg-secondary);
+  background: white;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
@@ -388,7 +377,7 @@ a:hover {
 .form-textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+  box-shadow: 0 0 0 3px rgba(165, 29, 42, 0.1);
 }
 
 .form-input::placeholder {
@@ -423,14 +412,13 @@ a:hover {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   transition: all var(--transition-base);
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--color-primary);
+  box-shadow: var(--shadow-lg);
 }
 
 .card-title {
@@ -447,7 +435,7 @@ a:hover {
    BETTING CODE CARDS
    ============================ */
 .code-card {
-  background: var(--color-bg-card);
+  background: white;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--spacing-md);
@@ -460,7 +448,7 @@ a:hover {
 
 .code-card:hover {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-md);
 }
 
 .code-provider {
@@ -469,6 +457,7 @@ a:hover {
   gap: var(--spacing-xs);
   font-weight: 600;
   font-size: 0.875rem;
+  color: var(--color-text-primary);
 }
 
 .code-details {
@@ -524,7 +513,7 @@ a:hover {
 }
 
 .alert-success {
-  background: rgba(0, 255, 136, 0.1);
+  background: rgba(76, 175, 80, 0.1);
   border-color: var(--color-success);
   color: var(--color-success);
 }
@@ -567,9 +556,9 @@ a:hover {
 .skeleton {
   background: linear-gradient(
     90deg,
-    var(--color-bg-secondary) 0%,
-    var(--color-bg-tertiary) 50%,
-    var(--color-bg-secondary) 100%
+    #f0f0f0 0%,
+    #e0e0e0 50%,
+    #f0f0f0 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -612,7 +601,7 @@ a:hover {
 /* ============================
    RESPONSIVE
    ============================ */
-@media (max-width: 768px) {
+@media (max-width: 968px) {
   .navbar-menu {
     display: none;
   }
@@ -626,4 +615,10 @@ a:hover {
   h1 { font-size: 2.5rem; }
   h2 { font-size: 2rem; }
   h3 { font-size: 1.5rem; }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 1rem;
+  }
 }

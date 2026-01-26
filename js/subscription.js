@@ -37,26 +37,39 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Step 1: Detect User Country
  * No backend call - use IP detection or default
  */
-function detectUserCountry() {
-  // Try to get country from various sources:
-  // 1. From user profile if available
-  const user = authService.getCurrentUser();
-  if (user && user.country) {
-    return user.country;
-  }
+async function detectCountryFrontend() {
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
 
-  // 2. From browser locale
-  const locale = navigator.language || navigator.userLanguage;
-  if (locale) {
-    const countryCode = locale.split('-')[1];
-    if (countryCode) {
-      return countryCode.toUpperCase();
+    if (data && data.country_code) {
+      return data.country_code;
     }
-  }
+  } catch (_) {}
 
-  // 3. Default to Nigeria (from config)
-  return CONFIG.DEFAULT_COUNTRY;
+  return 'NG';
 }
+
+// function detectUserCountry() {
+//   // Try to get country from various sources:
+//   // 1. From user profile if available
+//   const user = authService.getCurrentUser();
+//   if (user && user.country) {
+//     return user.country;
+//   }
+
+//   // 2. From browser locale
+//   const locale = navigator.language || navigator.userLanguage;
+//   if (locale) {
+//     const countryCode = locale.split('-')[1];
+//     if (countryCode) {
+//       return countryCode.toUpperCase();
+//     }
+//   }
+
+//   // 3. Default to Nigeria (from config)
+//   return CONFIG.DEFAULT_COUNTRY;
+// }
 
 /**
  * Initialize the subscription page
@@ -65,6 +78,8 @@ async function initializeSubscriptionPage() {
   try {
     // Step 1: Detect country (no API call)
     currentCountry = detectUserCountry();
+    // "NG"
+    // 
     console.log('Detected country:', currentCountry);
 
     // Step 2: Fetch pricing based on country

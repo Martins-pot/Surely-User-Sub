@@ -7,6 +7,7 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  background: white;
 }
 
 .auth-card {
@@ -28,6 +29,7 @@
   font-size: 1.75rem;
   font-weight: 700;
   text-transform: uppercase;
+  color: var(--color-text-primary);
 }
 
 .auth-logo svg {
@@ -42,6 +44,8 @@
 .auth-header h1 {
   margin-bottom: var(--spacing-sm);
   font-size: 2rem;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 .auth-header p {
@@ -112,7 +116,7 @@
 }
 
 .auth-divider span {
-  background: var(--color-bg-primary);
+  background: white;
   padding: 0 var(--spacing-sm);
   color: var(--color-text-tertiary);
   font-size: 0.875rem;
@@ -133,8 +137,7 @@
 
 /* Side Panel */
 .auth-side {
-  background: linear-gradient(135deg, rgba(220, 20, 60, 0.1) 0%, transparent 50%),
-              linear-gradient(45deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
+  background: #a51d2a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -154,28 +157,38 @@
     repeating-linear-gradient(
       0deg,
       transparent,
-      transparent 3px,
-      rgba(220, 20, 60, 0.03) 3px,
-      rgba(220, 20, 60, 0.03) 6px
+      transparent 50px,
+      rgba(255,255,255,0.03) 50px,
+      rgba(255,255,255,0.03) 51px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 50px,
+      rgba(255,255,255,0.03) 50px,
+      rgba(255,255,255,0.03) 51px
     );
-  opacity: 0.3;
 }
 
 .side-content {
   position: relative;
   z-index: 1;
   max-width: 400px;
+  color: white;
 }
 
 .side-content h2 {
   margin-bottom: var(--spacing-md);
   font-size: 2.5rem;
+  color: white;
+  text-transform: uppercase;
+  font-weight: 900;
 }
 
 .side-content p {
   font-size: 1.125rem;
   margin-bottom: var(--spacing-xl);
-  color: var(--color-text-secondary);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .side-features {
@@ -187,23 +200,23 @@
 .side-feature {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   padding: var(--spacing-md);
-  background: rgba(220, 20, 60, 0.05);
-  border: 1px solid rgba(220, 20, 60, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-md);
-  color: var(--color-text-primary);
+  color: white;
 }
 
 .side-feature svg {
   flex-shrink: 0;
-  color: var(--color-primary);
+  color: white;
 }
 
 .password-requirements {
   margin-top: var(--spacing-sm);
   padding: var(--spacing-sm);
-  background: var(--color-bg-secondary);
+  background: #f5f5f5;
   border-radius: var(--radius-md);
   font-size: 0.875rem;
 }
