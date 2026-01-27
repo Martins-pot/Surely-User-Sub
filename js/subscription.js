@@ -18,7 +18,7 @@ let pricingData = null;
 // Page load
 document.addEventListener('DOMContentLoaded', async () => {
   // Check authentication
-  if (!authService.isAuthenticated()) {
+  if (!securityManager.isAuthenticated()) {
     window.location.href = './login.html';
     return;
   }
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Step 1: Detect User Country
  * No backend call - use IP detection or default
  */
-async function detectCountryFrontend() {
+async function detectUserCountry() {
   try {
     const res = await fetch('https://ipapi.co/json/');
     const data = await res.json();
@@ -45,41 +45,20 @@ async function detectCountryFrontend() {
     if (data && data.country_code) {
       return data.country_code;
     }
-  } catch (_) {}
+  } catch (_) {
+    console.log('Country detection failed, using default');
+  }
 
-  return 'NG';
+  return CONFIG.DEFAULT_COUNTRY || 'NG';
 }
-
-// function detectUserCountry() {
-//   // Try to get country from various sources:
-//   // 1. From user profile if available
-//   const user = authService.getCurrentUser();
-//   if (user && user.country) {
-//     return user.country;
-//   }
-
-//   // 2. From browser locale
-//   const locale = navigator.language || navigator.userLanguage;
-//   if (locale) {
-//     const countryCode = locale.split('-')[1];
-//     if (countryCode) {
-//       return countryCode.toUpperCase();
-//     }
-//   }
-
-//   // 3. Default to Nigeria (from config)
-//   return CONFIG.DEFAULT_COUNTRY;
-// }
 
 /**
  * Initialize the subscription page
  */
 async function initializeSubscriptionPage() {
   try {
-    // Step 1: Detect country (no API call)
-    currentCountry = detectUserCountry();
-    // "NG"
-    // 
+    // Step 1: Detect country (no API call to backend)
+    currentCountry = await detectUserCountry();
     console.log('Detected country:', currentCountry);
 
     // Step 2: Fetch pricing based on country
@@ -174,7 +153,7 @@ function displayPricingPlans() {
           <li>✓ Discussions with top puntas</li>
         </ul>
         
-        <button class="btn btn-primary btn-block" onclick="initiatePayment('monthly', true)">
+        <button class="btn btn-outline btn-block" onclick="initiatePayment('monthly', true)">
           Upgrade to Monthly Pro
         </button>
       </div>
@@ -204,7 +183,7 @@ function displayPricingPlans() {
           <li>✓ Priority customer support</li>
         </ul>
         
-        <button class="btn btn-primary btn-block" onclick="initiatePayment('yearly', true)">
+        <button class="btn btn-outline btn-block" onclick="initiatePayment('yearly', true)">
           Upgrade to Annual Pro
         </button>
       </div>
