@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Surely - Own Your Game. Bet Smarter.</title>
   <meta name="description" content="Get sure bet codes and insights to maximize your winning with AI-powered predictions">
   
@@ -23,24 +23,61 @@
       <a href="/" class="logo-link">
         <img src="images/logo.png" alt="Surely Logo" class="logo-img">
       </a>
-      <ul class="nav-links">
+      
+      <!-- Desktop Navigation -->
+      <ul class="nav-links desktop-only">
         <li><a href="#home">Home</a></li>
         <li><a href="#codes">Free Codes</a></li>
         <li><a href="#subscription">Subscription</a></li>
         <li><a href="#reviews">Reviews</a></li>
       </ul>
-      <div class="navbar-actions">
-        <!-- Show when logged out -->
+      
+      <!-- Desktop Auth Buttons -->
+      <div class="navbar-actions desktop-only">
         <div id="auth-buttons" class="auth-buttons">
           <a href="./pages/login.html" class="download-btn">Login</a>
         </div>
-        <!-- Show when logged in -->
         <div id="user-menu" class="user-menu hidden">
           <a href="./pages/profile.html" class="download-btn">Profile</a>
         </div>
       </div>
+      
+      <!-- Mobile Hamburger Menu -->
+      <button class="mobile-menu-toggle mobile-only" id="mobile-menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </nav>
   </header>
+
+  <!-- Mobile Drawer Menu -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <div class="mobile-drawer-overlay" id="mobile-drawer-overlay"></div>
+    <div class="mobile-drawer-content">
+      <div class="mobile-drawer-header">
+        <img src="images/logo.png" alt="Surely Logo" class="drawer-logo">
+        <button class="mobile-drawer-close" id="mobile-drawer-close" aria-label="Close menu">×</button>
+      </div>
+      
+      <nav class="mobile-drawer-nav">
+        <a href="#home" class="drawer-link">Home</a>
+        <a href="#codes" class="drawer-link">Free Codes</a>
+        <a href="#subscription" class="drawer-link">Subscription</a>
+        <a href="#reviews" class="drawer-link">Reviews</a>
+        
+        <div class="drawer-divider"></div>
+        
+        <!-- Auth Section in Drawer -->
+        <div id="mobile-auth-buttons" class="mobile-auth-section">
+          <a href="./pages/login.html" class="drawer-btn drawer-btn-primary">Login</a>
+        </div>
+        <div id="mobile-user-menu" class="mobile-auth-section hidden">
+          <a href="./pages/profile.html" class="drawer-btn drawer-btn-primary">Profile</a>
+        </div>
+      </nav>
+    </div>
+  </div>
 
   <!-- Hero Section -->
   <section class="hero" id="home">
@@ -48,9 +85,6 @@
       <div class="hero-text">
         <img src="images/hero-headline.png" alt="OWN YOUR GAME. BET SMARTER WITH SURELY." class="hero-headline">
         <p>Get sure bet codes and insights to maximize your winning</p>
-        <!-- <div class="hero-cta-wrapper">
-          <a href="./pages/login.html" id="hero-main-cta" class="hero-btn-primary">Get Started</a>
-        </div> -->
         <div class="app-buttons">
           <a href="#" onclick="showAppleComingSoon(event)">
             <img src="images/app-store-button.png" alt="Download on App Store">
@@ -90,14 +124,16 @@
     </div>
   </section>
 
-  <!-- CTA Section -->
+  <!-- CTA Section - Restructured for Mobile -->
   <section class="cta-section">
     <div class="cta-content">
-      <div class="cta-text">
-        <h2>Get Started Today</h2>
-        <p>Ready to own your game? Join thousands of smart bettors using Surely to make better betting decisions.</p>
+      <div class="cta-text-wrapper">
+        <div class="cta-text">
+          <h2>Get Started Today</h2>
+          <p>Ready to own your game? Join thousands of smart bettors using Surely to make better betting decisions.</p>
+        </div>
+        <a href="./pages/login.html" id="cta-main-btn" class="cta-btn">Get Started</a>
       </div>
-      <a href="./pages/login.html" id="cta-main-btn" class="cta-btn">Get Started</a>
       <img class="cta-graphic" src="images/cta-graphic.png" alt="Decorative Graphic">
     </div>
   </section>
@@ -157,7 +193,7 @@
     </div>
   </section>
 
-  <!-- Testimonials Section -->
+  <!-- Testimonials Section - Working Carousel -->
   <section class="testimonials" id="reviews">
     <div class="testimonials-content">
       <div class="testimonials-header">
@@ -165,28 +201,66 @@
           <h2>Don't just take our word for it</h2>
           <p>Hear from some of our amazing customers who are building faster.</p>
         </div>
-        <a href="./pages/login.html" id="testimonials-cta-btn" class="cta-btn">Get Started</a>
+        <a href="./pages/login.html" id="testimonials-cta-btn" class="cta-btn desktop-only">Get Started</a>
       </div>
-      <div class="testimonial-card">
-        <blockquote>This app is a game-changer! I highly recommend it to anyone serious about betting.</blockquote>
-        <div class="testimonial-author">
-          <img class="author-image" src="images/testimonial-avatar-1.png" alt="Sarah M.">
-          <div>
-            <div class="author-name">Sarah M.</div>
-            <div class="author-title">Social Media Influencer</div>
-            <div class="stars">★★★★★</div>
+      
+      <!-- Testimonial Carousel -->
+      <div class="testimonial-carousel">
+        <button class="carousel-btn carousel-prev" id="carousel-prev" aria-label="Previous testimonial">‹</button>
+        
+        <div class="testimonial-track" id="testimonial-track">
+          <!-- Testimonial 1 -->
+          <div class="testimonial-card active">
+            <blockquote>This app is a game-changer! The AI predictions are incredibly accurate and have helped me make smarter bets. I highly recommend it to anyone serious about betting.</blockquote>
+            <div class="testimonial-author">
+              <img class="author-image" src="images/testimonial-avatar-1.png" alt="Sarah M." onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect fill=%22%23ddd%22 width=%2280%22 height=%2280%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2230%22 fill=%22%23999%22%3ESM%3C/text%3E%3C/svg%3E'">
+              <div>
+                <div class="author-name">Sarah M.</div>
+                <div class="author-title">Social Media Influencer</div>
+                <div class="stars">★★★★★</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Testimonial 2 -->
+          <div class="testimonial-card">
+            <blockquote>Surely has transformed my betting strategy. The expert codes and real-time analytics give me the confidence to place informed bets. Worth every penny!</blockquote>
+            <div class="testimonial-author">
+              <img class="author-image" src="images/testimonial-avatar-2.png" alt="James K." onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect fill=%22%23ddd%22 width=%2280%22 height=%2280%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2230%22 fill=%22%23999%22%3EJK%3C/text%3E%3C/svg%3E'">
+              <div>
+                <div class="author-name">James K.</div>
+                <div class="author-title">Professional Bettor</div>
+                <div class="stars">★★★★★</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Testimonial 3 -->
+          <div class="testimonial-card">
+            <blockquote>I've tried many betting apps, but Surely stands out. The community features and premium codes have significantly improved my win rate. Highly recommended!</blockquote>
+            <div class="testimonial-author">
+              <img class="author-image" src="images/testimonial-avatar-3.png" alt="Amara O." onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect fill=%22%23ddd%22 width=%2280%22 height=%2280%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2230%22 fill=%22%23999%22%3EAO%3C/text%3E%3C/svg%3E'">
+              <div>
+                <div class="author-name">Amara O.</div>
+                <div class="author-title">Sports Enthusiast</div>
+                <div class="stars">★★★★★</div>
+              </div>
+            </div>
           </div>
         </div>
+        
+        <button class="carousel-btn carousel-next" id="carousel-next" aria-label="Next testimonial">›</button>
       </div>
-      <div class="testimonial-dots">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot active"></span>
+      
+      <div class="testimonial-dots" id="testimonial-dots">
+        <span class="dot active" data-index="0"></span>
+        <span class="dot" data-index="1"></span>
+        <span class="dot" data-index="2"></span>
       </div>
     </div>
   </section>
 
-  <!-- Subscription Plans -->
+  <!-- Subscription Plans - Dynamic from API -->
   <section id="subscription" class="section-plans">
     <div class="container">
       <div class="section-header">
@@ -194,69 +268,22 @@
         <p>Find the Perfect Plan for You. Start free or go Pro to unlock AI-powered predictions, exclusive puntas' codes, and more.</p>
       </div>
       
-      <div class="plans-grid">
-        <div class="plan-card">
-          <h3>Free</h3>
-          <div class="plan-price">
-            <span class="price">₦0</span>
-            <span class="period">/month</span>
-          </div>
-          <p class="plan-desc">Perfect for casual users</p>
-          
-          <ul class="plan-features">
-            <li>✓ Access to free daily codes</li>
-            <li>✓ Watch ads to unlock premium codes</li>
-            <li>✗ No access to AI Predictions</li>
-            <li>✓ Basic community access</li>
-          </ul>
-          
-          <a href="./pages/login.html" class="btn btn-outline btn-block">Get Started Free</a>
-        </div>
-        
-        <div class="plan-card plan-featured">
-          <div class="plan-badge">BEST VALUE</div>
-          <h3>Pro Monthly</h3>
-          <div class="plan-price">
-            <span class="price">₦2,000</span>
-            <span class="period">/month</span>
-          </div>
-          <p class="plan-desc">All features. Full power.</p>
-          
-          <ul class="plan-features">
-            <li>✓ Access to premium codes</li>
-            <li>✓ AI Punta – advanced AI predictions</li>
-            <li>✓ Ad-free experience</li>
-            <li>✓ Discussions with top puntas</li>
-          </ul>
-          
-          <a href="./pages/subscription.html" class="btn btn-outline btn-block subscription-link">Upgrade to Monthly Pro</a>
-        </div>
-        
-        <div class="plan-card">
-          <h3>Pro Annual</h3>
-          <div class="plan-price">
-            <span class="price">₦21,600</span>
-            <span class="period">/year</span>
-          </div>
-          <p class="plan-desc">₦1,800/month — Best Value</p>
-          
-          <ul class="plan-features">
-            <li>✓ Everything in Pro Monthly</li>
-            <li>✓ Save 10% yearly</li>
-            <li>✓ Early access to new features</li>
-            <li>✓ Priority customer support</li>
-          </ul>
-          
-          <a href="./pages/subscription.html" class="btn btn-outline btn-block subscription-link">Upgrade to Annual Pro</a>
-        </div>
+      <!-- Loading State -->
+      <div id="plans-loading" class="plans-grid">
+        <div class="plan-card skeleton" style="height: 400px;"></div>
+        <div class="plan-card skeleton" style="height: 400px;"></div>
+        <div class="plan-card skeleton" style="height: 400px;"></div>
       </div>
+      
+      <!-- Plans Grid (populated dynamically) -->
+      <div id="plans-grid" class="plans-grid hidden"></div>
     </div>
   </section>
 
-  <!-- FAQ Section -->
+  <!-- FAQ Section - Centered Text -->
   <section class="section-faq">
     <div class="container">
-      <div class="section-header">
+      <div class="section-header faq-header-centered">
         <h2>Everything You Need to Know</h2>
         <p>Got questions? We've got answers. Here are some of the most common inquiries about Surely, our features, and how to get the best out of our platform.</p>
       </div>
@@ -281,13 +308,35 @@
     </div>
   </section>
 
+  <!-- Telegram CTA Section -->
+  <section class="telegram-cta">
+    <div class="telegram-content">
+      <div class="telegram-icon">
+        <svg width="64" height="64" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="120" cy="120" r="120" fill="white"/>
+          <path d="M81.229 128.772l14.237 39.406s1.78 3.687 3.686 3.687 30.255-29.492 30.255-29.492l31.525-60.89L81.737 118.6" fill="#c8daea"/>
+          <path d="M100.106 138.878l-2.733 29.046s-1.144 8.9 7.754 0 17.415-15.763 17.415-15.763" fill="#a9c6d8"/>
+          <path d="M81.486 130.178l-17.8-5.467s-2.16-.96-1.462-3.093c.145-.444.42-.853 1.462-1.584 5.978-4.18 111.426-41.135 111.426-41.135s3.208-1.081 5.1-.362a2.766 2.766 0 0 1 1.885 2.055 9.357 9.357 0 0 1 .254 2.585c-.009.752-.1 1.449-.169 2.542-.692 11.165-21.4 94.493-21.4 94.493s-1.239 4.876-5.678 5.043a8.13 8.13 0 0 1-5.925-2.292c-8.711-7.493-38.819-27.727-45.472-32.177a1.27 1.27 0 0 1-.546-.9c-.093-.469.417-1.05.417-1.05s52.426-46.6 53.821-51.492c.108-.379-.3-.566-.848-.4-3.482 1.281-63.844 39.4-70.506 43.607a3.21 3.21 0 0 1-1.48.09z" fill="#007dbb"/>
+        </svg>
+      </div>
+      <h2>Join Our Community</h2>
+      <p>Get exclusive tips, early access to premium codes, and connect with thousands of smart bettors on Telegram</p>
+      <a href="https://t.me/surelykmp" target="_blank" rel="noopener noreferrer" class="telegram-btn">
+        <svg width="24" height="24" viewBox="0 0 240 240" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M81.486 130.178l-17.8-5.467s-2.16-.96-1.462-3.093c.145-.444.42-.853 1.462-1.584 5.978-4.18 111.426-41.135 111.426-41.135s3.208-1.081 5.1-.362a2.766 2.766 0 0 1 1.885 2.055 9.357 9.357 0 0 1 .254 2.585c-.009.752-.1 1.449-.169 2.542-.692 11.165-21.4 94.493-21.4 94.493s-1.239 4.876-5.678 5.043a8.13 8.13 0 0 1-5.925-2.292c-8.711-7.493-38.819-27.727-45.472-32.177a1.27 1.27 0 0 1-.546-.9c-.093-.469.417-1.05.417-1.05s52.426-46.6 53.821-51.492c.108-.379-.3-.566-.848-.4-3.482 1.281-63.844 39.4-70.506 43.607a3.21 3.21 0 0 1-1.48.09z"/>
+        </svg>
+        Join Telegram Channel
+      </a>
+    </div>
+  </section>
+
   <!-- Contact CTA -->
   <section class="contact-cta">
     <div class="contact-content">
       <div class="contact-avatars">
-        <img src="images/team-avatar-1.png" alt="Team member 1">
-        <img src="images/team-avatar-2.png" alt="Team member 2">
-        <img src="images/team-avatar-3.png" alt="Team member 3">
+        <img src="images/team-avatar-1.png" alt="Team member 1" onerror="this.style.display='none'">
+        <img src="images/team-avatar-2.png" alt="Team member 2" onerror="this.style.display='none'">
+        <img src="images/team-avatar-3.png" alt="Team member 3" onerror="this.style.display='none'">
       </div>
       <h2>Still have questions?</h2>
       <p>Can't find the answer you're looking for? Please chat to our friendly team.</p>
@@ -308,7 +357,7 @@
           <h1>S</h1>
           <p>SURELY</p>
         </div>
-        <img class="app-preview" src="images/final-cta-phone.png" alt="App Preview">
+        <img class="app-preview" src="images/final-cta-phone.png" alt="App Preview" onerror="this.style.display='none'">
       </div>
     </div>
   </section>
@@ -355,7 +404,7 @@
       </div>
       <div class="footer-bottom">
         <div class="footer-logo">
-          <img src="images/surely-logo-footer.png" alt="SURELY">
+          <img src="images/surely-logo-footer.png" alt="SURELY" onerror="this.textContent='SURELY'">
         </div>
         <div class="footer-copyright">Copyright © 2025 Surely. All rights reserved.</div>
       </div>
@@ -373,72 +422,6 @@
     function showAppleComingSoon(event) {
       event.preventDefault();
       alert('iOS App Coming Soon!\n\nWe\'re working hard to bring Surely to the App Store. Stay tuned!');
-    }
-    
-    // Check if user is logged in and update UI
-    function updateAuthUI() {
-      // Use securityManager to check authentication status
-      const isAuthenticated = securityManager && securityManager.isAuthenticated();
-      const authButtons = document.getElementById('auth-buttons');
-      const userMenu = document.getElementById('user-menu');
-      
-      console.log('Auth state:', isAuthenticated);
-      
-      // Update navbar - show ONLY one button
-      if (isAuthenticated) {
-        if (authButtons) authButtons.style.display = 'none';
-        if (userMenu) userMenu.style.display = 'flex';
-      } else {
-        if (authButtons) authButtons.style.display = 'flex';
-        if (userMenu) userMenu.style.display = 'none';
-      }
-      
-      // Update all CTA buttons
-      const ctaButtons = [
-        'hero-main-cta',
-        'cta-main-btn',
-        'testimonials-cta-btn',
-        'final-cta-btn'
-      ];
-      
-      ctaButtons.forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) {
-          if (isAuthenticated) {
-            btn.href = './pages/profile.html';
-            btn.textContent = 'Go to Dashboard';
-          } else {
-            btn.href = './pages/login.html';
-            btn.textContent = 'Get Started';
-          }
-        }
-      });
-      
-      // Update subscription links
-      const subscriptionLinks = document.querySelectorAll('.subscription-link');
-      subscriptionLinks.forEach(link => {
-        if (!isAuthenticated) {
-          link.href = './pages/login.html';
-          const originalText = link.textContent;
-          if (!originalText.includes('Login')) {
-            link.setAttribute('data-original-text', originalText);
-            link.textContent = 'Login to Subscribe';
-          }
-        } else {
-          const originalText = link.getAttribute('data-original-text');
-          if (originalText) {
-            link.textContent = originalText;
-            link.href = './pages/subscription.html';
-          }
-        }
-      });
-    }
-    
-    // Run on page load
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', updateAuthUI);
-    } else {
-      updateAuthUI();
     }
   </script>
 </body>
