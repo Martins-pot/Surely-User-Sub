@@ -149,40 +149,161 @@ async function loadCodes() {
 }
 
 /**
- * Display codes in the UI - Horizontal scroll design
+ * Display codes in the UI - Matching mobile implementation
  */
 function displayCodes(codes) {
   const container = document.getElementById('codes-container');
   
-  container.innerHTML = codes.slice(0, 10).map(code => `
-    <div class="code-card-horizontal">
-      <div class="code-header">
-        <div class="provider-info">
-          <span class="provider-name">${securityManager.sanitizeHTML(code.provider)}</span>
-          <span class="provider-flag">${getProviderFlag(code.provider)}</span>
+  container.innerHTML = codes.slice(0, 10).map(code => {
+    // Check if it's a prediction type (foresport) or regular code type
+    const isPrediction = code.platform?.toLowerCase() === 'foresport';
+    
+    if (isPrediction) {
+      return createPredictionCard(code);
+    } else {
+      return createCodeCard(code);
+    }
+  }).join('');
+}
+
+/**
+ * Create regular code card (CodeTypeLayout)
+ */
+function createCodeCard(code) {
+  const formattedTime = formatTimeAgo(code.createdAt);
+  const roundedOdds = Math.round(code.odds * 10) / 10;
+  const roundedRating = Math.round(code.rating * 10) / 10;
+  
+  return `
+    <div class="code-card-mobile">
+      ${code.accuracy && code.isExpensive ? `
+        <div class="code-accuracy ${code.accuracy >= 70 ? 'high' : 'medium'}">
+          Source accuracy: ${code.accuracy}%
         </div>
-        <button class="copy-btn" onclick="copyCode('${securityManager.sanitizeHTML(code.code)}')" title="Copy code">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2z"/>
-            <path d="M2 6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1H6a3 3 0 0 1-3-3V6z"/>
-          </svg>
-        </button>
-      </div>
+      ` : ''}
       
-      <div class="code-main">
-        <div class="code-value">${securityManager.sanitizeHTML(code.code)}</div>
-        <div class="code-rating">
-          <span class="star">⭐</span>
-          <span class="rating-value">${code.rating || '4.2'}</span>
+      <div class="code-main-content">
+        <div class="code-left">
+          <div class="code-platform-row">
+            <span class="code-platform">${getPlatformText(code.platform)}</span>
+            <span class="code-country-flag">${getCountryFlag(code.country)}</span>
+          </div>
+          
+          <div class="code-text-value">${securityManager.sanitizeHTML(code.text)}</div>
+          
+          <div class="code-actions">
+            <button class="code-action-btn" onclick="copyCode('${securityManager.sanitizeHTML(code.text).replace(/'/g, "\\'")}')">
+              <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2z"/>
+                <path d="M2 6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1H6a3 3 0 0 1-3-3V6z"/>
+              </svg>
+            </button>
+            
+            <button class="code-action-btn" onclick="shareCode('${securityManager.sanitizeHTML(code.text).replace(/'/g, "\\'")}', '${code.platform}', '${code.country}')">
+              <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
-      
-      <div class="code-footer">
-        <div class="code-odds-display">${code.odds} odds</div>
-        <div class="code-time">${formatTimeAgo(code.createdAt)}</div>
+        
+        <div class="code-right">
+          <div class="code-odds">${roundedOdds} odds</div>
+          
+          <div class="code-rating">
+            <span class="rating-star">⭐</span>
+            <span class="rating-value">${roundedRating}</span>
+          </div>
+          
+          <div class="code-time">${formattedTime}</div>
+        </div>
       </div>
     </div>
-  `).join('');
+  `;
+}
+
+/**
+ * Create prediction card (PredictionTypeLayout)
+ */
+function createPredictionCard(code) {
+  const formattedTime = formatTimeAgo(code.createdAt);
+  const formattedDate = formatDate(code.expirationDate);
+  const roundedOdds = Math.round(code.odds * 10) / 10;
+  const roundedRating = Math.round(code.rating * 10) / 10;
+  const formattedCode = code.team1 && code.team2 
+    ? `${code.team1} vs ${code.team2} * ${code.text}`
+    : code.text;
+  
+  return `
+    <div class="code-card-mobile prediction-type">
+      <div class="prediction-header">
+        <div class="prediction-rating">
+          <span class="rating-star">⭐</span>
+          <span class="rating-value">${roundedRating}</span>
+        </div>
+        ${code.expirationDate ? `<div class="prediction-date">${formattedDate}</div>` : ''}
+      </div>
+      
+      ${code.accuracy && code.isExpensive ? `
+        <div class="code-accuracy ${code.accuracy >= 70 ? 'high' : 'medium'}">
+          Source accuracy: ${code.accuracy}%
+        </div>
+      ` : ''}
+      
+      <div class="prediction-box">
+        <div class="prediction-box-item">${securityManager.sanitizeHTML(code.country || '')}</div>
+        <div class="prediction-box-item prediction-text">${securityManager.sanitizeHTML(code.text)}</div>
+        <div class="prediction-box-item">${roundedOdds} odds</div>
+      </div>
+      
+      ${code.team1 && code.team2 ? `
+        <div class="prediction-teams">
+          <div class="team">${securityManager.sanitizeHTML(code.team1)}</div>
+          <div class="team">${securityManager.sanitizeHTML(code.team2)}</div>
+        </div>
+      ` : ''}
+      
+      <div class="prediction-footer">
+        <div class="code-actions">
+          <button class="code-action-btn" onclick="copyCode('${formattedCode.replace(/'/g, "\\'")}')">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2z"/>
+              <path d="M2 6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1H6a3 3 0 0 1-3-3V6z"/>
+            </svg>
+          </button>
+          
+          <button class="code-action-btn" onclick="shareCode('${formattedCode.replace(/'/g, "\\'")}', '${code.platform}', '${code.team1} vs ${code.team2}')">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="code-time">${formattedTime}</div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Get platform display text
+ */
+function getPlatformText(platform) {
+  if (!platform) return '';
+  
+  const platformMap = {
+    '1xbet': '1XBET',
+    'sportybet': 'SportyBet',
+    'bet9ja': 'Bet9ja',
+    'betking': 'BetKing',
+    'betway': 'Betway',
+    'livescorebet': 'LivescoreBet',
+    'megapari': 'Megapari',
+    'betfigo': 'BetFigo',
+    'ng234bet': 'NG234Bet'
+  };
+  
+  return platformMap[platform.toLowerCase()] || platform;
 }
 
 /**
@@ -190,15 +311,65 @@ function displayCodes(codes) {
  */
 function copyCode(code) {
   navigator.clipboard.writeText(code).then(() => {
-    const btn = event.target.closest('.copy-btn');
-    const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<span style="font-size: 12px;">✓</span>';
-    setTimeout(() => {
-      btn.innerHTML = originalHTML;
-    }, 1500);
+    showNotification('Code copied to clipboard!');
   }).catch(err => {
     console.error('Failed to copy:', err);
+    showNotification('Failed to copy code', 'error');
   });
+}
+
+/**
+ * Share code
+ */
+function shareCode(code, platform, context) {
+  const shareText = context 
+    ? `${context}: ${code}`
+    : `${platform}: ${code}`;
+  
+  if (navigator.share) {
+    navigator.share({
+      text: shareText
+    }).catch(err => console.log('Share failed:', err));
+  } else {
+    // Fallback: copy to clipboard
+    copyCode(shareText);
+  }
+}
+
+/**
+ * Show notification
+ */
+function showNotification(message, type = 'success') {
+  const notification = document.createElement('div');
+  notification.className = `code-notification ${type}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 10);
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 2000);
+}
+
+/**
+ * Format date
+ */
+function formatDate(dateString) {
+  if (!dateString) return '';
+  
+  try {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  } catch (e) {
+    return dateString;
+  }
 }
 
 /**
@@ -243,6 +414,23 @@ function getProviderFlag(provider) {
   };
   
   return flags[provider] || flags.default;
+}
+
+/**
+ * Get country flag emoji
+ */
+function getCountryFlag(country) {
+  const flags = {
+    'Nigeria': '🇳🇬',
+    'Cameroon': '🇨🇲',
+    'Ghana': '🇬🇭',
+    'Kenya': '🇰🇪',
+    'South Africa': '🇿🇦',
+    'Tanzania': '🇹🇿',
+    'Uganda': '🇺🇬'
+  };
+  
+  return flags[country] || '🌍';
 }
 
 /**

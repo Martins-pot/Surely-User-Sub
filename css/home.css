@@ -75,7 +75,7 @@
   width: 80%;
   max-width: 300px;
   height: 100%;
-  background: white;
+  background: #a51d2a;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
   transform: translateX(100%);
   transition: transform 0.3s;
@@ -91,7 +91,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid #E0E0E0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .drawer-logo {
@@ -103,7 +103,7 @@
   background: none;
   border: none;
   font-size: 2rem;
-  color: #333;
+  color: white;
   cursor: pointer;
   padding: 0;
   width: 40px;
@@ -115,24 +115,26 @@
 
 .mobile-drawer-nav {
   padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .drawer-link {
   display: block;
   padding: 1rem 1.5rem;
-  color: #333;
+  color: white;
   text-decoration: none;
   font-size: 1.1rem;
   transition: background 0.3s;
 }
 
 .drawer-link:hover {
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .drawer-divider {
   height: 1px;
-  background: #E0E0E0;
+  background: rgba(255, 255, 255, 0.2);
   margin: 1rem 0;
 }
 
@@ -145,19 +147,18 @@
   width: 100%;
   text-align: center;
   padding: 0.875rem;
-  border-radius: 8px;
+  border-radius: 30px;
   text-decoration: none;
   font-weight: 600;
   transition: all 0.3s;
-}
-
-.drawer-btn-primary {
-  background: #a51d2a;
+  background: transparent;
   color: white;
+  border: 2px solid white;
 }
 
-.drawer-btn-primary:hover {
-  background: #8b1a28;
+.drawer-btn:hover {
+  background: white;
+  color: #a51d2a;
 }
 
 /* Desktop/Mobile Toggle Classes */
@@ -508,7 +509,7 @@
 }
 
 /* ============================
-   FREE CODES SECTION
+   FREE CODES SECTION - MOBILE IMPLEMENTATION
    ============================ */
 .section-codes {
   padding: 100px 0;
@@ -551,9 +552,10 @@
   border-radius: 10px;
 }
 
-.code-card-horizontal {
-  min-width: 280px;
-  max-width: 280px;
+/* Mobile Code Card - Regular Type */
+.code-card-mobile {
+  min-width: 320px;
+  max-width: 320px;
   background: white;
   border: 1px solid #E0E0E0;
   border-radius: 12px;
@@ -565,65 +567,108 @@
   flex-shrink: 0;
 }
 
-.code-card-horizontal:hover {
+.code-card-mobile:hover {
   border-color: #a51d2a;
   box-shadow: 0 4px 12px rgba(165, 29, 42, 0.15);
   transform: translateY(-2px);
 }
 
-.code-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.code-accuracy {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
-.provider-info {
+.code-accuracy.high {
+  background: rgba(33, 188, 34, 0.1);
+  color: #21BC22;
+}
+
+.code-accuracy.medium {
+  background: rgba(255, 149, 0, 0.1);
+  color: #FF9500;
+}
+
+.code-main-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.code-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.code-platform-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.provider-name {
+.code-platform {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #333;
+  color: #7F7F7F;
 }
 
-.provider-flag {
+.code-country-flag {
   font-size: 1.25rem;
 }
 
-.copy-btn {
-  background: #f5f5f5;
-  border: 1px solid #E0E0E0;
-  border-radius: 6px;
-  padding: 0.4rem;
+.code-text-value {
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  word-break: break-word;
+}
+
+.code-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.code-action-btn {
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
   cursor: pointer;
+  color: #9E9E9E;
+  transition: all 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s;
-  color: #666;
 }
 
-.copy-btn:hover {
-  background: #a51d2a;
-  border-color: #a51d2a;
-  color: white;
+.code-action-btn:hover {
+  color: #a51d2a;
+  transform: scale(1.1);
 }
 
-.code-main {
+.code-action-btn:active {
+  transform: scale(0.9);
+}
+
+.code-right {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+  min-width: 80px;
 }
 
-.code-value {
-  font-family: 'Courier New', monospace;
-  font-size: 1.5rem;
-  font-weight: 700;
+.code-odds {
+  font-size: 1rem;
+  font-weight: 600;
   color: #333;
-  letter-spacing: 1px;
+  white-space: nowrap;
 }
 
 .code-rating {
@@ -632,34 +677,114 @@
   gap: 0.25rem;
 }
 
-.star {
+.rating-star {
   font-size: 1rem;
-  color: #ffd700;
 }
 
 .rating-value {
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #333;
 }
 
-.code-footer {
+.code-time {
+  font-size: 0.625rem;
+  color: #9E9E9E;
+  white-space: nowrap;
+}
+
+/* Prediction Type Card */
+.code-card-mobile.prediction-type {
+  gap: 0.75rem;
+}
+
+.prediction-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 0.75rem;
-  border-top: 1px solid #f0f0f0;
 }
 
-.code-odds-display {
-  font-size: 1.125rem;
-  font-weight: 700;
+.prediction-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.prediction-date {
+  font-size: 0.625rem;
+  color: #9E9E9E;
+}
+
+.prediction-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 0.75rem;
+  gap: 0.5rem;
+}
+
+.prediction-box-item {
+  flex: 1;
+  font-size: 0.75rem;
+  color: #9E9E9E;
+  text-align: center;
+}
+
+.prediction-box-item.prediction-text {
+  font-size: 0.875rem;
+  font-weight: 600;
   color: #333;
 }
 
-.code-time {
-  font-size: 0.75rem;
-  color: #666;
+.prediction-teams {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.prediction-teams .team {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.prediction-teams .team:last-child {
+  text-align: right;
+}
+
+.prediction-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Notification */
+.code-notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #333;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.code-notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.code-notification.error {
+  background: #ef4444;
 }
 
 .no-codes-message {
@@ -669,6 +794,7 @@
   background: white;
   border-radius: 12px;
   border: 1px solid #E0E0E0;
+  min-width: 100%;
 }
 
 /* ============================
@@ -1377,6 +1503,11 @@ footer {
   .cta-content {
     flex-direction: column;
     text-align: center;
+    align-items: center;
+  }
+  
+  .cta-text-wrapper {
+    align-items: center;
   }
   
   .cta-text h2 {
@@ -1385,6 +1516,11 @@ footer {
   
   .cta-text p {
     font-size: 1rem;
+  }
+  
+  .cta-btn {
+    width: 100%;
+    max-width: none;
   }
   
   .cta-graphic {
@@ -1433,15 +1569,20 @@ footer {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+    padding: 0 1rem;
   }
   
   .section-header h2 {
     font-size: 1.8rem;
   }
   
-  .code-card-horizontal {
-    min-width: 260px;
-    max-width: 260px;
+  .code-card-mobile {
+    min-width: 300px;
+    max-width: 300px;
+  }
+  
+  .codes-grid {
+    padding: 0 1rem;
   }
   
   /* Testimonials */
