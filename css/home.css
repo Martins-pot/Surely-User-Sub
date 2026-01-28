@@ -63,13 +63,58 @@
    HERO SECTION
    ============================ */
 .hero {
-  background: #a51d2a;
-  padding: 150px 2rem 100px;
   position: relative;
+  padding: 150px 2rem 140px;
   overflow: hidden;
+
+  background: linear-gradient(
+    to top,
+    #5a0f16 0%,
+    #7f1620 35%,
+    #a51d2a 100%
+  );
+
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
 }
 
+
+
 .hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  background-image: url('../images/bg_pattern.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain; /* shows full mesh once */
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+
+  opacity: 0.35;
+  z-index: 1;
+  pointer-events: none;
+}
+
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.35),
+    rgba(0,0,0,0) 50%
+  );
+  z-index: 1;
+  pointer-events: none;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+}
+
+
+/* .hero::before {
   content: '';
   position: absolute;
   top: 0;
@@ -81,7 +126,7 @@
   background-position: center;
   background-repeat: no-repeat;
   opacity: 1;
-}
+} */
 
 .hero-content {
   max-width: 1400px;
