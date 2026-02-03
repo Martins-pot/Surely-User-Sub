@@ -1,5 +1,6 @@
 /**
  * Home Page Styles - Mobile Optimized
+ * Changes marked inline with comments
  */
 
 /* ============================
@@ -138,8 +139,12 @@
   margin: 1rem 0;
 }
 
+/* Changed: added flex column + gap so two drawer buttons stack with spacing */
 .mobile-auth-section {
   padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .drawer-btn {
@@ -192,10 +197,12 @@
   gap: 1rem;
 }
 
+/* Changed: added gap so Play Store + App Store buttons have spacing */
 .auth-buttons,
 .user-menu {
   display: flex;
   align-items: center;
+  gap: 0.75rem;
 }
 
 /* ============================
@@ -230,9 +237,10 @@
 /* ============================
    HERO SECTION
    ============================ */
+/* Changed: horizontal padding set to 96px */
 .hero {
   position: relative;
-  padding: 150px 2rem 100px;
+  padding: 150px 96px 100px;
   overflow: hidden;
   background: linear-gradient(to top, #5a0f16 0%, #7f1620 35%, #a51d2a 100%);
   border-bottom-left-radius: 40px;
@@ -311,18 +319,20 @@
   position: relative;
 }
 
+/* Changed: box-shadow removed from both hero and about phone mockups */
 .phone-mockup {
   width: 100%;
   max-width: 350px;
   border-radius: 40px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: none;
 }
 
 /* ============================
    ABOUT SECTION
    ============================ */
+/* Changed: horizontal padding set to 96px (matches hero) */
 .about {
-  padding: 100px 2rem;
+  padding: 100px 96px;
   background: white;
 }
 
@@ -382,32 +392,35 @@
 }
 
 /* ============================
-   CTA SECTION - MOBILE OPTIMIZED
+   CTA SECTION
    ============================ */
 .cta-section {
-  background: #f5f5f5;
-  padding: 80px 2rem;
+  background: white;
+  padding: 0 96px 100px;
 }
 
 .cta-content {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 3rem;
+  background: #f5f5f5;
+  border-radius: 24px;
+  padding: 60px 56px;
 }
 
 .cta-text-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .cta-text h2 {
   font-size: 2.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   color: #333;
 }
 
@@ -416,11 +429,38 @@
   font-size: 1.05rem;
   line-height: 1.6;
   margin-bottom: 0;
+  max-width: 420px;
 }
 
 .cta-graphic {
-  width: 300px;
+  width: 320px;
   flex-shrink: 0;
+}
+
+/* ============================
+   DOWNLOAD APP BUTTON (shared)
+   ============================ */
+.download-app-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #111;
+  color: white;
+  padding: 1rem 1.8rem;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.25s, transform 0.2s;
+  width: fit-content;
+}
+
+.download-app-btn:hover {
+  background: #333;
+  transform: translateY(-2px);
 }
 
 /* ============================
@@ -437,13 +477,13 @@
 }
 
 .toolkit-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 4rem;
 }
 
 .toolkit-header h2 {
   font-size: 3rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 16px;
   color: #333;
 }
 
@@ -451,7 +491,7 @@
   color: #666;
   font-size: 1.1rem;
   max-width: 900px;
-  margin: 0 auto;
+  margin: 0;
   line-height: 1.8;
 }
 
@@ -509,11 +549,31 @@
 }
 
 /* ============================
-   FREE CODES SECTION - MOBILE IMPLEMENTATION
+   FREE CODES SECTION
    ============================ */
 .section-codes {
   padding: 100px 0;
   background: #f9f9f9;
+}
+
+/* Changed: gap reduced to 16px between title row and cards */
+.section-codes .section-header {
+  margin-bottom: 16px;
+}
+
+/* Changed: brand red color applied to FREE CODES title (Surely brand styling) */
+.section-codes .section-header h2 {
+  color: #a51d2a;
+}
+
+/* Changed: Refresh button — colour + border swapped to brand red so it's visible on light bg */
+.section-codes .btn-secondary {
+  color: #a51d2a;
+  border-color: #a51d2a;
+}
+.section-codes .btn-secondary:hover {
+  background: #a51d2a;
+  color: white;
 }
 
 .section-header {
@@ -528,12 +588,15 @@
   color: #333;
 }
 
+/* Changed: padding-top/bottom added so translateY(-2px) + box-shadow on hover
+   are no longer clipped by overflow-y: hidden */
 .codes-grid {
   display: flex;
   gap: 1.5rem;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-bottom: 1rem;
+  padding-top: 16px;
+  padding-bottom: 24px;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
@@ -552,14 +615,14 @@
   border-radius: 10px;
 }
 
-/* Mobile Code Card - Regular Type */
+/* Changed: card padding set to 24px on all sides */
 .code-card-mobile {
   min-width: 320px;
   max-width: 320px;
   background: white;
   border: 1px solid #E0E0E0;
   border-radius: 12px;
-  padding: 1.25rem;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -592,9 +655,13 @@
   color: #FF9500;
 }
 
+/* Changed: align-items: stretch so both columns stretch to the same height,
+   allowing margin-top: auto on .code-actions and .code-time to push them
+   to the bottom and line up horizontally */
 .code-main-content {
   display: flex;
   justify-content: space-between;
+  align-items: stretch;
   gap: 1rem;
 }
 
@@ -629,10 +696,12 @@
   word-break: break-word;
 }
 
+/* Changed: margin-top: auto pushes actions to the bottom of code-left */
 .code-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  margin-top: auto;
 }
 
 .code-action-btn {
@@ -687,10 +756,13 @@
   color: #333;
 }
 
+/* Changed: margin-top: auto pushes time to the bottom of code-right,
+   aligning it horizontally with the share icons in code-left */
 .code-time {
   font-size: 0.625rem;
   color: #9E9E9E;
   white-space: nowrap;
+  margin-top: auto;
 }
 
 /* Prediction Type Card */
@@ -798,23 +870,27 @@
 }
 
 /* ============================
-   TESTIMONIALS SECTION - WORKING CAROUSEL
+   TESTIMONIALS SECTION
    ============================ */
 .testimonials {
-  padding: 100px 2rem;
-  background: #f9f9f9;
+  padding: 100px 96px 100px;
+  background: white;
 }
 
-.testimonials-content {
-  max-width: 1200px;
-  margin: 0 auto;
+/* Rounded gray card that wraps everything */
+.testimonials-card {
+  background: #f5f5f5;
+  border-radius: 24px;
+  padding: 48px 48px 40px;
 }
 
+/* Header: title left, DOWNLOAD APP button right */
 .testimonials-header {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 3rem;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
 }
 
 .testimonials-header h2 {
@@ -825,12 +901,13 @@
 .testimonials-header p {
   color: #666;
   font-size: 1rem;
+  margin-top: 0.5rem;
 }
 
 .testimonial-carousel {
   position: relative;
   overflow: hidden;
-  padding: 0 50px;
+  padding: 0;
 }
 
 .testimonial-track {
@@ -838,13 +915,14 @@
   transition: transform 0.5s ease;
 }
 
+/* White rounded card for each testimonial */
 .testimonial-card {
   min-width: 100%;
   background: white;
-  padding: 4rem;
+  padding: 48px 40px 36px;
   border-radius: 20px;
   text-align: center;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   opacity: 0;
   transition: opacity 0.5s;
 }
@@ -865,7 +943,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .author-image {
@@ -873,6 +951,7 @@
   height: 80px;
   border-radius: 50%;
   background: #ddd;
+  object-fit: cover;
 }
 
 .author-name {
@@ -888,9 +967,10 @@
 .stars {
   color: #ffd700;
   font-size: 1.5rem;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
+/* Carousel arrow buttons (hidden in markup but kept for safety) */
 .carousel-btn {
   position: absolute;
   top: 50%;
@@ -903,7 +983,7 @@
   font-size: 2rem;
   color: #333;
   cursor: pointer;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   transition: all 0.3s;
@@ -935,7 +1015,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #ddd;
+  background: #ccc;
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -952,6 +1032,19 @@
 .section-plans {
   padding: 100px 2rem;
   background: white;
+}
+
+/* Changed: stacked vertically and left-aligned; description sits under title */
+.section-plans .section-header {
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.75rem;
+}
+
+.section-plans .section-header p {
+  max-width: 100%;
+  margin: 0;
 }
 
 .plans-grid {
@@ -1041,22 +1134,31 @@
 }
 
 /* ============================
-   FAQ SECTION - CENTERED TEXT
+   FAQ / EVERYTHING YOU NEED TO KNOW
    ============================ */
 .section-faq {
-  padding: 100px 2rem;
-  background: #f9f9f9;
+  padding: 100px 96px;
+  background: white;
+}
+
+.section-faq .container {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .faq-header-centered {
   text-align: center;
-  max-width: 800px;
-  margin: 0 auto 4rem;
+  max-width: 900px;
+  margin: 0 auto 3.5rem;
+  /* override .section-header row layout – stack title + subtext vertically */
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
 }
 
 .faq-header-centered h2 {
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
+  font-size: 2.8rem;
+  margin-bottom: 1.2rem;
   color: #333;
 }
 
@@ -1070,6 +1172,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 3rem;
+  margin-bottom: 4rem;
 }
 
 .faq-item {
@@ -1079,24 +1182,80 @@
 .faq-icon {
   width: 60px;
   height: 60px;
-  background: #f5f5f5;
+  background: #f0f0f0;
+  border: 1px solid #e8e8e8;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.5rem;
-  font-size: 1.8rem;
 }
 
 .faq-item h3 {
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  margin-bottom: 0.85rem;
   color: #333;
+  font-weight: 600;
 }
 
 .faq-item p {
   color: #666;
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 0.97rem;
+}
+
+/* "Still have questions?" rounded contact card */
+.contact-card {
+  background: #f5f5f5;
+  border-radius: 24px;
+  padding: 52px 40px;
+  text-align: center;
+}
+
+.contact-avatars {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.contact-avatars img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid white;
+  object-fit: cover;
+  margin: 0 -10px;
+  background: #ccc;
+}
+
+.contact-card h2 {
+  font-size: 1.6rem;
+  color: #333;
+  margin-bottom: 0.6rem;
+}
+
+.contact-card p {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 1.8rem;
+  line-height: 1.5;
+}
+
+.contact-btn {
+  display: inline-block;
+  background: #a51d2a;
+  color: white;
+  padding: 0.85rem 2.2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.25s, transform 0.2s;
+}
+
+.contact-btn:hover {
+  background: #8a1824;
+  transform: translateY(-2px);
 }
 
 /* ============================
@@ -1356,10 +1515,11 @@
 /* ============================
    FOOTER
    ============================ */
+/* Changed: horizontal padding set to 96px */
 footer {
   background: #0a1628;
   color: white;
-  padding: 60px 2rem 30px;
+  padding: 60px 96px 30px;
 }
 
 .footer-content {
@@ -1445,7 +1605,7 @@ footer {
     display: block;
   }
   
-  /* Hero Section */
+  /* Hero Section — 96px reverts to 1.5rem on tablet/mobile */
   .hero {
     padding: 120px 1.5rem 80px;
   }
@@ -1472,7 +1632,7 @@ footer {
     max-width: 280px;
   }
   
-  /* About Section */
+  /* About Section — 96px reverts to 1.5rem */
   .about {
     padding: 60px 1.5rem;
   }
@@ -1495,36 +1655,33 @@ footer {
     font-size: 1.5rem;
   }
   
-  /* CTA Section */
+  /* CTA Section — card collapses to column */
   .cta-section {
-    padding: 60px 1.5rem;
+    padding: 0 1.5rem 60px;
   }
-  
+
   .cta-content {
     flex-direction: column;
-    text-align: center;
-    align-items: center;
+    padding: 40px 28px;
+    border-radius: 18px;
   }
-  
+
   .cta-text-wrapper {
-    align-items: center;
+    align-items: flex-start;
   }
-  
+
   .cta-text h2 {
     font-size: 1.8rem;
   }
-  
+
   .cta-text p {
     font-size: 1rem;
+    max-width: 100%;
   }
-  
-  .cta-btn {
-    width: 100%;
-    max-width: none;
-  }
-  
+
   .cta-graphic {
     width: 200px;
+    align-self: center;
   }
   
   /* Toolkit Section */
@@ -1565,14 +1722,15 @@ footer {
     padding: 60px 0;
   }
   
-  .section-header {
+  .section-codes .section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
     padding: 0 1rem;
+    margin-bottom: 16px;
   }
   
-  .section-header h2 {
+  .section-codes .section-header h2 {
     font-size: 1.8rem;
   }
   
@@ -1582,40 +1740,40 @@ footer {
   }
   
   .codes-grid {
-    padding: 0 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   
-  /* Testimonials */
+  /* Testimonials — card wrapper collapses on mobile */
   .testimonials {
-    padding: 60px 1.5rem;
+    padding: 60px 1.5rem 60px;
   }
-  
+
+  .testimonials-card {
+    padding: 32px 20px 28px;
+    border-radius: 18px;
+  }
+
   .testimonials-header {
     flex-direction: column;
-    text-align: center;
     gap: 1.5rem;
+    align-items: flex-start;
   }
-  
+
   .testimonials-header h2 {
     font-size: 1.8rem;
   }
-  
+
   .testimonial-carousel {
-    padding: 0 40px;
+    padding: 0;
   }
-  
+
   .testimonial-card {
-    padding: 2.5rem 1.5rem;
+    padding: 32px 20px 28px;
   }
-  
+
   .testimonial-card blockquote {
     font-size: 1.2rem;
-  }
-  
-  .carousel-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
   }
   
   /* Plans Section */
@@ -1628,22 +1786,31 @@ footer {
     gap: 2rem;
   }
   
-  /* FAQ Section */
+  /* FAQ / Everything You Need to Know */
   .section-faq {
     padding: 60px 1.5rem;
   }
-  
+
+  .faq-header-centered {
+    margin-bottom: 2.5rem;
+  }
+
   .faq-header-centered h2 {
     font-size: 1.8rem;
   }
-  
+
   .faq-header-centered p {
     font-size: 1rem;
   }
-  
+
   .faq-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+
+  .contact-card {
+    padding: 36px 24px;
+    border-radius: 18px;
   }
   
   /* Telegram Section */
@@ -1704,7 +1871,11 @@ footer {
     width: 250px;
   }
   
-  /* Footer */
+  /* Footer — 96px reverts to 1.5rem */
+  footer {
+    padding: 60px 1.5rem 30px;
+  }
+  
   .footer-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
@@ -1724,16 +1895,43 @@ footer {
   }
   
   .about,
-  .cta-section,
   .toolkit,
-  .section-codes,
-  .testimonials,
   .section-plans,
   .section-faq,
   .telegram-cta,
   .contact-cta,
   .final-cta {
     padding: 50px 1rem;
+  }
+
+  /* Card-wrapper sections: outer padding keeps 1rem gutters only */
+  .cta-section {
+    padding: 0 1rem 50px;
+  }
+
+  .cta-content {
+    padding: 28px 20px;
+  }
+
+  .testimonials {
+    padding: 50px 1rem 50px;
+  }
+
+  .testimonials-card {
+    padding: 24px 16px 22px;
+  }
+  
+  .section-codes {
+    padding: 50px 0;
+  }
+  
+  .section-codes .section-header {
+    padding: 0 1rem;
+  }
+  
+  .codes-grid {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   
   .section-header h2,
@@ -1742,17 +1940,21 @@ footer {
     font-size: 1.5rem;
   }
   
+  footer {
+    padding: 50px 1rem 24px;
+  }
+  
   .footer-grid {
     grid-template-columns: 1fr;
   }
-  
-  .carousel-btn {
-    width: 35px;
-    height: 35px;
-  }
-  
+
   .testimonial-carousel {
-    padding: 0 30px;
+    padding: 0;
+  }
+
+  .download-app-btn {
+    font-size: 0.9rem;
+    padding: 0.85rem 1.4rem;
   }
 }
 

@@ -124,7 +124,7 @@
     </div>
   </section>
 
-  <!-- CTA Section - Restructured for Mobile -->
+  <!-- CTA Section -->
   <section class="cta-section">
     <div class="cta-content">
       <div class="cta-text-wrapper">
@@ -132,7 +132,10 @@
           <h2>Get Started Today</h2>
           <p>Ready to own your game? Join thousands of smart bettors using Surely to make better betting decisions.</p>
         </div>
-        <a href="./pages/login.html" id="cta-main-btn" class="cta-btn">Get Started</a>
+        <a href="https://play.google.com/store/apps/details?id=com.sportmaster.surelykmp" target="_blank" rel="noopener noreferrer" class="download-app-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v6"/><path d="M9 12l3 3 3-3"/></svg>
+          DOWNLOAD APP
+        </a>
       </div>
       <img class="cta-graphic" src="images/cta-graphic.png" alt="Decorative Graphic">
     </div>
@@ -158,8 +161,8 @@
             <a href="#codes">Learn more →</a>
           </div>
           <div class="feature-item">
-            <h3>Comment Section</h3>
-            <p>Engage with other users, discuss predictions, and share insights.</p>
+            <h3>AI Punta</h3>
+            <p>AI match predictions and smart betting insights for each game.</p>
             <a href="#codes">Learn more →</a>
           </div>
         </div>
@@ -193,27 +196,29 @@
     </div>
   </section>
 
-  <!-- Testimonials Section - Working Carousel -->
+  <!-- Testimonials Section -->
   <section class="testimonials" id="reviews">
-    <div class="testimonials-content">
+    <div class="testimonials-card">
+      <!-- Header: left-aligned title + DOWNLOAD APP on right, matching Image 3 -->
       <div class="testimonials-header">
         <div>
           <h2>Don't just take our word for it</h2>
           <p>Hear from some of our amazing customers who are building faster.</p>
         </div>
-        <a href="./pages/login.html" id="testimonials-cta-btn" class="cta-btn desktop-only">Get Started</a>
+        <a href="https://play.google.com/store/apps/details?id=com.sportmaster.surelykmp" target="_blank" rel="noopener noreferrer" class="download-app-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v6"/><path d="M9 12l3 3 3-3"/></svg>
+          DOWNLOAD APP
+        </a>
       </div>
       
-      <!-- Testimonial Carousel -->
+      <!-- Carousel: no prev/next arrows, dots only -->
       <div class="testimonial-carousel">
-        <button class="carousel-btn carousel-prev" id="carousel-prev" aria-label="Previous testimonial">‹</button>
-        
         <div class="testimonial-track" id="testimonial-track">
           <!-- Testimonial 1 -->
           <div class="testimonial-card active">
             <blockquote>This app is a game-changer! The AI predictions are incredibly accurate and have helped me make smarter bets. I highly recommend it to anyone serious about betting.</blockquote>
             <div class="testimonial-author">
-              <img class="author-image" src="images/testimonial-avatar-1.png" alt="Sarah M." onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect fill=%22%23ddd%22 width=%2280%22 height=%2280%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2230%22 fill=%22%23999%22%3ESM%3C/text%3E%3C/svg%3E'">
+              <img class="author-image" src="images/testimonial-avatar-1.png" alt="Sarah M." onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Ccircle cx=%2240%22 cy=%2240%22 r=%2240%22 fill=%22%23a51d2a%22/%3E%3C/svg%3E'">
               <div>
                 <div class="author-name">Sarah M.</div>
                 <div class="author-title">Social Media Influencer</div>
@@ -248,8 +253,6 @@
             </div>
           </div>
         </div>
-        
-        <button class="carousel-btn carousel-next" id="carousel-next" aria-label="Next testimonial">›</button>
       </div>
       
       <div class="testimonial-dots" id="testimonial-dots">
@@ -260,9 +263,10 @@
     </div>
   </section>
 
-  <!-- Subscription Plans - Dynamic from API -->
+  <!-- Subscription Plans -->
   <section id="subscription" class="section-plans">
     <div class="container">
+      <!-- Header: description moved under title, both left-aligned -->
       <div class="section-header">
         <h2>OUR PLANS</h2>
         <p>Find the Perfect Plan for You. Start free or go Pro to unlock AI-powered predictions, exclusive puntas' codes, and more.</p>
@@ -280,7 +284,7 @@
     </div>
   </section>
 
-  <!-- FAQ Section - Centered Text -->
+  <!-- Everything You Need to Know + FAQ -->
   <section class="section-faq">
     <div class="container">
       <div class="section-header faq-header-centered">
@@ -288,22 +292,55 @@
         <p>Got questions? We've got answers. Here are some of the most common inquiries about Surely, our features, and how to get the best out of our platform.</p>
       </div>
       
+      <!-- FAQ grid: 3 items with SVG icons, matching Image 1 left→right order -->
       <div class="faq-grid">
         <div class="faq-item">
-          <div class="faq-icon">🔒</div>
-          <h3>Is my personal information safe?</h3>
-          <p>Absolutely! We employ state-of-the-art encryption methods and robust security protocols to ensure that your data remains private and secure.</p>
-        </div>
-        <div class="faq-item">
-          <div class="faq-icon">📊</div>
+          <div class="faq-icon">
+            <!-- speech-bubble + question mark -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              <path d="M12 7v2"/>
+              <circle cx="12" cy="11.5" r="0.5" fill="#666"/>
+            </svg>
+          </div>
           <h3>How accurate are Surely's predictions?</h3>
           <p>Our predictions rely on historical data, team performance, and analytics. No bet is guaranteed, but we offer insights for informed decisions.</p>
         </div>
         <div class="faq-item">
-          <div class="faq-icon">🔄</div>
+          <div class="faq-icon">
+            <!-- swap / transfer arrows -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 16V4"/>
+              <path d="M3 8l4-4 4 4"/>
+              <path d="M17 8v12"/>
+              <path d="M21 16l-4 4-4-4"/>
+            </svg>
+          </div>
           <h3>Can I use Surely for free?</h3>
           <p>Yes! We offer a free plan with basic bet codes and insights. Upgrade to the Pro Plan for advanced features and premium predictions.</p>
         </div>
+        <div class="faq-item">
+          <div class="faq-icon">
+            <!-- shield -->
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3>Is my personal information safe?</h3>
+          <p>Absolutely! We employ state-of-the-art encryption methods and robust security protocols to ensure that your data remains private and secure.</p>
+        </div>
+      </div>
+
+      <!-- "Still have questions?" contact card — grey rounded card, matching Image 1 -->
+      <div class="contact-card">
+        <div class="contact-avatars">
+          <img src="images/team-avatar-1.png" alt="Team member 1" onerror="this.style.display='none'">
+          <img src="images/team-avatar-2.png" alt="Team member 2" onerror="this.style.display='none'">
+          <img src="images/team-avatar-3.png" alt="Team member 3" onerror="this.style.display='none'">
+        </div>
+        <h2>Still have questions?</h2>
+        <p>Can't find the answer you're looking for? Please chat to our friendly team.</p>
+        <a href="mailto:support@surely.com" class="contact-btn">Get in touch</a>
       </div>
     </div>
   </section>
@@ -327,20 +364,6 @@
         </svg>
         Join Telegram Channel
       </a>
-    </div>
-  </section>
-
-  <!-- Contact CTA -->
-  <section class="contact-cta">
-    <div class="contact-content">
-      <div class="contact-avatars">
-        <img src="images/team-avatar-1.png" alt="Team member 1" onerror="this.style.display='none'">
-        <img src="images/team-avatar-2.png" alt="Team member 2" onerror="this.style.display='none'">
-        <img src="images/team-avatar-3.png" alt="Team member 3" onerror="this.style.display='none'">
-      </div>
-      <h2>Still have questions?</h2>
-      <p>Can't find the answer you're looking for? Please chat to our friendly team.</p>
-      <a href="/cdn-cgi/l/email-protection#ea828f869aaa878f989e998998839a9ec4898587" class="contact-btn">Get in touch</a>
     </div>
   </section>
 
@@ -417,7 +440,12 @@
   <script src="./services/api.service.js"></script>
   <script src="./js/home.js"></script>
   
-  <!-- Apple Coming Soon Function -->
+  <!-- Apple Coming Soon -->
   <script>
     function showAppleComingSoon(event) {
-      event.preventD}
+      event.preventDefault();
+      alert('iOS app coming soon! Stay tuned.');
+    }
+  </script>
+</body>
+</html>
