@@ -1876,14 +1876,11 @@ footer {
   
   /* Final CTA */
   .final-cta {
-    padding: 40px 1.5rem 0;
-    background-image: url('../images/mobile_footer_bg.png');
-    background-size: contain;
-    background-position: bottom center;
-    background-repeat: no-repeat;
-    min-height: 1200px;
-    display: flex;
-    align-items: flex-start;
+    padding: 40px 1.5rem;
+    background: #a51d2a;
+    background-image: none;
+    min-height: auto;
+    display: block;
   }
   
   .final-cta-content {
@@ -1966,14 +1963,11 @@ footer {
   }
 
   .final-cta {
-    background-image: url('../images/mobile_footer_bg.png');
-    background-size: contain;
-    background-position: bottom center;
-    background-repeat: no-repeat;
-    padding: 30px 1rem 0;
-    min-height: 1100px;
-    display: flex;
-    align-items: flex-start;
+    background: #a51d2a;
+    background-image: none;
+    padding: 30px 1rem;
+    min-height: auto;
+    display: block;
   }
 
   .final-cta-text h2 {
