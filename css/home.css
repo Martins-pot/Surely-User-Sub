@@ -1876,8 +1876,14 @@ footer {
   
   /* Final CTA */
   .final-cta {
-    padding: 60px 1.5rem;
+    padding: 40px 1.5rem 0;
     background-image: url('../images/mobile_footer_bg.png');
+    background-size: contain;
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    min-height: 1200px;
+    display: flex;
+    align-items: flex-start;
   }
   
   .final-cta-content {
@@ -1886,10 +1892,13 @@ footer {
   
   .final-cta-text h2 {
     font-size: 2rem;
+    margin-bottom: 1rem;
   }
 
   .final-cta-text p {
     font-size: 1rem;
+    margin-bottom: 2rem;
+    max-width: 90%;
   }
 
   .final-cta-buttons {
@@ -1958,6 +1967,24 @@ footer {
 
   .final-cta {
     background-image: url('../images/mobile_footer_bg.png');
+    background-size: contain;
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    padding: 30px 1rem 0;
+    min-height: 1100px;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .final-cta-text h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .final-cta-text p {
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    max-width: 90%;
   }
 
   .cta-section {
@@ -2013,7 +2040,7 @@ footer {
   }
 
   .final-cta-buttons img {
-    height: 50px;
+    height: 55px;
   }
 
   .final-cta-buttons {
