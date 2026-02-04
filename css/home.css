@@ -1,6 +1,6 @@
 /**
- * Home Page Styles - Mobile Optimized
- * Changes marked inline with comments
+ * Home Page Styles - Mobile Optimized - COMPLETE VERSION
+ * All fixes applied for mobile footer and final CTA alignment
  */
 
 /* ============================
@@ -1351,7 +1351,7 @@
   background: linear-gradient(135deg, #0088cc 0%, #005a8c 100%);
   position: relative;
   overflow: hidden;
-  margin-bottom: 80px;
+  margin-bottom: 0;
 }
 
 .telegram-cta::before {
@@ -1498,7 +1498,6 @@
 /* ============================
    FINAL CTA BANNER
    ============================ */
-/* Changed: removed red background, added background image, simplified layout */
 .final-cta {
   padding: 100px 96px;
   background-image: url('../images/footer_bg.png');
@@ -1507,6 +1506,8 @@
   background-repeat: no-repeat;
   position: relative;
   overflow: hidden;
+  margin-bottom: 0;
+  margin-top: 0;
 }
 
 .final-cta-content {
@@ -1530,7 +1531,6 @@
   max-width: 700px;
 }
 
-/* Changed: new button container for the two store buttons, aligned to left */
 .final-cta-buttons {
   display: flex;
   gap: 1.5rem;
@@ -1555,11 +1555,13 @@
 /* ============================
    FOOTER
    ============================ */
-/* Changed: background color to #00091D */
 footer {
   background: #00091D;
   color: white;
   padding: 60px 96px 30px;
+  position: relative;
+  z-index: 1;
+  margin-top: 0;
 }
 
 .footer-content {
@@ -1601,7 +1603,6 @@ footer {
   opacity: 1;
 }
 
-/* Changed: footer app buttons in a row, not column */
 .footer-apps {
   display: flex;
   flex-direction: row;
@@ -1858,7 +1859,7 @@ footer {
   /* Telegram Section */
   .telegram-cta {
     padding: 60px 1.5rem;
-    margin-bottom: 60px;
+    margin-bottom: 0;
   }
   
   .telegram-content h2 {
@@ -1874,59 +1875,87 @@ footer {
     padding: 1rem 2rem;
   }
   
-  /* Final CTA */
+  /* Final CTA - FIXED */
   .final-cta {
-    padding: 40px 1.5rem 0;
-    background-image: url('../images/mobile_footer_bg.png');
-    background-size: contain;
-    background-position: bottom center;
-    background-repeat: no-repeat;
-    min-height: 1200px;
-    display: flex;
-    align-items: flex-start;
+    padding: 60px 1.5rem;
+    background: #a51d2a;
+    background-image: none;
+    min-height: auto;
+    display: block;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 0;
+    margin-top: 0;
   }
   
   .final-cta-content {
     text-align: left;
     position: relative;
     z-index: 2;
+    width: 100%;
+  }
+  
+  .final-cta-text {
+    width: 100%;
   }
   
   .final-cta-text h2 {
     font-size: 2rem;
     margin-bottom: 1rem;
+    color: white;
   }
 
   .final-cta-text p {
     font-size: 1rem;
     margin-bottom: 2rem;
-    max-width: 90%;
+    max-width: 100%;
+    color: rgba(255, 255, 255, 0.9);
   }
 
   .final-cta-buttons {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
+    width: 100%;
+  }
+
+  .final-cta-buttons a {
+    width: auto;
   }
 
   .final-cta-buttons img {
     height: 55px;
+    width: auto;
   }
   
-  /* Footer */
+  /* Footer - FIXED */
   footer {
     padding: 60px 1.5rem 30px;
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+    background: #00091D;
+    width: 100%;
+    clear: both;
+  }
+  
+  .footer-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
   }
   
   .footer-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
+    width: 100%;
   }
   
   .footer-bottom {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
+    width: 100%;
   }
 
   /* Download Modal */
@@ -1957,30 +1986,25 @@ footer {
   .about,
   .toolkit,
   .section-plans,
-  .section-faq,
-  .telegram-cta,
-  .final-cta {
+  .section-faq {
     padding: 50px 1rem;
   }
 
   .telegram-cta {
-    margin-bottom: 40px;
+    padding: 50px 1rem;
+    margin-bottom: 0;
   }
 
+  /* Final CTA - Extra Small */
   .final-cta {
-    background-image: url('../images/mobile_footer_bg.png');
-    background-size: contain;
-    background-position: bottom center;
-    background-repeat: no-repeat;
-    padding: 30px 1rem 0;
-    min-height: 1100px;
-    display: flex;
-    align-items: flex-start;
-  }
-
-  .final-cta-content {
+    padding: 50px 1rem;
+    background: #a51d2a;
+    background-image: none;
+    min-height: auto;
+    display: block;
     position: relative;
-    z-index: 2;
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   .final-cta-text h2 {
@@ -1991,7 +2015,15 @@ footer {
   .final-cta-text p {
     font-size: 0.95rem;
     margin-bottom: 2rem;
-    max-width: 90%;
+    max-width: 100%;
+  }
+
+  .final-cta-buttons {
+    align-items: flex-start;
+  }
+
+  .final-cta-buttons img {
+    height: 50px;
   }
 
   .cta-section {
@@ -2029,8 +2061,10 @@ footer {
     font-size: 1.5rem;
   }
   
+  /* Footer - Extra Small */
   footer {
     padding: 50px 1rem 24px;
+    margin-top: 0;
   }
   
   .footer-grid {
@@ -2044,14 +2078,6 @@ footer {
   .download-app-btn {
     font-size: 0.9rem;
     padding: 0.85rem 1.4rem;
-  }
-
-  .final-cta-buttons img {
-    height: 55px;
-  }
-
-  .final-cta-buttons {
-    align-items: flex-start;
   }
 }
 
@@ -2068,4 +2094,16 @@ body {
 img {
   max-width: 100%;
   height: auto;
+}
+
+/* Ensure proper stacking */
+section {
+  position: relative;
+  z-index: auto;
+  overflow-x: hidden;
+}
+
+.final-cta,
+footer {
+  overflow: visible;
 }
