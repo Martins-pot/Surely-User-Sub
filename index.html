@@ -30,6 +30,7 @@
         <li><a href="#codes">Free Codes</a></li>
         <li><a href="#subscription">Subscription</a></li>
         <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#telegram">Telegram</a></li>
       </ul>
       
       <!-- Desktop Auth Buttons -->
@@ -65,6 +66,7 @@
         <a href="#codes" class="drawer-link">Free Codes</a>
         <a href="#subscription" class="drawer-link">Subscription</a>
         <a href="#reviews" class="drawer-link">Reviews</a>
+        <a href="#telegram" class="drawer-link">Telegram</a>
         
         <div class="drawer-divider"></div>
         
@@ -79,6 +81,24 @@
     </div>
   </div>
 
+  <!-- Download Modal -->
+  <div class="download-modal" id="download-modal">
+    <div class="download-modal-overlay" id="download-modal-overlay"></div>
+    <div class="download-modal-content">
+      <button class="download-modal-close" id="download-modal-close" aria-label="Close">×</button>
+      <h3>Download Surely</h3>
+      <p>Choose your platform</p>
+      <div class="download-modal-buttons">
+        <a href="https://play.google.com/store/apps/details?id=com.sportmaster.surelykmp" target="_blank" rel="noopener noreferrer" class="download-modal-btn">
+          <img src="images/transparent_playstore.png" alt="Get it on Google Play">
+        </a>
+        <a href="#" onclick="showAppleComingSoon(event)" class="download-modal-btn">
+          <img src="images/transparent_appstore.png" alt="Download on App Store">
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- Hero Section -->
   <section class="hero" id="home">
     <div class="hero-content">
@@ -86,10 +106,10 @@
         <img src="images/hero-headline.png" alt="OWN YOUR GAME. BET SMARTER WITH SURELY." class="hero-headline">
         <p>Get sure bet codes and insights to maximize your winning</p>
         <div class="app-buttons">
-          <a href="#" onclick="showAppleComingSoon(event)">
+          <a href="#" onclick="showDownloadModal(event)">
             <img src="images/app-store-button.png" alt="Download on App Store">
           </a>
-          <a href="https://play.google.com/store/apps/details?id=com.sportmaster.surelykmp" target="_blank" rel="noopener noreferrer">
+          <a href="#" onclick="showDownloadModal(event)">
             <img src="images/google-play-button.png" alt="Get it on Google Play">
           </a>
         </div>
@@ -132,7 +152,7 @@
           <h2>Get Started Today</h2>
           <p>Ready to own your game? Join thousands of smart bettors using Surely to make better betting decisions.</p>
         </div>
-        <a href="https://play.google.com/store/apps/details?id=com.sportmaster.surelykmp" target="_blank" rel="noopener noreferrer" class="download-app-btn">
+        <a href="#" onclick="showDownloadModal(event)" class="download-app-btn">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v6"/><path d="M9 12l3 3 3-3"/></svg>
           DOWNLOAD APP
         </a>
@@ -205,7 +225,7 @@
           <h2>Don't just take our word for it</h2>
           <p>Hear from some of our amazing customers who are building faster.</p>
         </div>
-        <a href="https://play.google.com/store/apps/details?id=com.sportmaster.surelykmp" target="_blank" rel="noopener noreferrer" class="download-app-btn">
+        <a href="#" onclick="showDownloadModal(event)" class="download-app-btn">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v6"/><path d="M9 12l3 3 3-3"/></svg>
           DOWNLOAD APP
         </a>
@@ -346,7 +366,7 @@
   </section>
 
   <!-- Telegram CTA Section -->
-  <section class="telegram-cta">
+  <section class="telegram-cta" id="telegram">
     <div class="telegram-content">
       <div class="telegram-icon">
         <svg width="64" height="64" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -373,14 +393,14 @@
       <div class="final-cta-text">
         <h2>Get Started Today</h2>
         <p>Ready to own your game? Join thousands of smart bettors using Surely to make better betting decisions.</p>
-        <a href="./pages/login.html" id="final-cta-btn" class="final-cta-btn">Get Started</a>
-      </div>
-      <div class="final-cta-visual">
-        <div class="brand-card">
-          <h1>S</h1>
-          <p>SURELY</p>
+        <div class="final-cta-buttons">
+          <a href="https://play.google.com/store/apps/details?id=com.sportmaster.surelykmp" target="_blank" rel="noopener noreferrer">
+            <img src="images/transparent_playstore.png" alt="Get it on Google Play">
+          </a>
+          <a href="#" onclick="showAppleComingSoon(event)">
+            <img src="images/transparent_appstore.png" alt="Download on App Store">
+          </a>
         </div>
-        <img class="app-preview" src="images/final-cta-phone.png" alt="App Preview" onerror="this.style.display='none'">
       </div>
     </div>
   </section>
@@ -409,17 +429,15 @@
           <ul>
             <li><a href="#">Terms</a></li>
             <li><a href="#">Privacy</a></li>
-            <li><a href="#">Cookies</a></li>
-            <li><a href="#">Licenses</a></li>
           </ul>
         </div>
         <div class="footer-column">
           <h4>Get the app</h4>
           <div class="footer-apps">
-            <a href="#" onclick="showAppleComingSoon(event)">
+            <a href="#" onclick="showDownloadModal(event)">
               <img src="images/app-store-button.png" alt="Download on App Store">
             </a>
-            <a href="https://play.google.com/store/apps/details?id=com.sportmaster.surelykmp" target="_blank" rel="noopener noreferrer">
+            <a href="#" onclick="showDownloadModal(event)">
               <img src="images/google-play-button.png" alt="Get it on Google Play">
             </a>
           </div>
@@ -440,12 +458,36 @@
   <script src="./services/api.service.js"></script>
   <script src="./js/home.js"></script>
   
-  <!-- Apple Coming Soon -->
+  <!-- Download Modal Script -->
   <script>
+    function showDownloadModal(event) {
+      event.preventDefault();
+      const modal = document.getElementById('download-modal');
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideDownloadModal() {
+      const modal = document.getElementById('download-modal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
     function showAppleComingSoon(event) {
       event.preventDefault();
       alert('iOS app coming soon! Stay tuned.');
     }
+
+    // Close modal on overlay click
+    document.getElementById('download-modal-overlay').addEventListener('click', hideDownloadModal);
+    document.getElementById('download-modal-close').addEventListener('click', hideDownloadModal);
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        hideDownloadModal();
+      }
+    });
   </script>
 </body>
 </html>
