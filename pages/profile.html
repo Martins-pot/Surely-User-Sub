@@ -29,6 +29,7 @@
         <li><a href="#" class="active">Profile</a></li>
       </ul>
       <div class="navbar-actions">
+        <a href="../index.html" class="download-btn">Go to Home</a>
         <button class="download-btn" data-logout>Logout</button>
       </div>
     </nav>
@@ -59,187 +60,116 @@
       <!-- Profile Sections -->
       <div class="profile-sections">
         
-        <!-- Personal Information Card -->
-        <div class="profile-card">
-          <div class="card-header">
-            <h2>Personal Information</h2>
-            <button class="btn btn-secondary btn-sm" id="edit-profile-btn" onclick="toggleEditMode()">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+        <!-- Subscription Card - Expandable -->
+        <div class="profile-card expandable-card">
+          <div class="card-header expandable-header" onclick="toggleSection('subscription')">
+            <div class="header-left">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M3 9h18"/>
+                <path d="M9 21V9"/>
               </svg>
-              Edit
-            </button>
+              <h2>Subscription</h2>
+            </div>
+            <svg class="expand-icon" id="subscription-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+            </svg>
           </div>
           
-          <form id="profile-form" class="profile-form">
-            <div class="form-row">
+          <div class="expandable-content" id="subscription-content">
+            <div class="subscription-info" id="subscription-info">
+              <div class="subscription-loading">
+                <div class="skeleton" style="height: 80px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Card - Expandable -->
+        <div class="profile-card expandable-card">
+          <div class="card-header expandable-header" onclick="toggleSection('security')">
+            <div class="header-left">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+              <h2>Security</h2>
+            </div>
+            <svg class="expand-icon" id="security-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+            </svg>
+          </div>
+          
+          <div class="expandable-content" id="security-content">
+            <form id="password-form" class="profile-form">
               <div class="form-group">
-                <label for="firstName" class="form-label">First Name</label>
-                <input 
-                  type="text" 
-                  id="firstName" 
-                  name="firstName" 
-                  class="form-input" 
-                  disabled
-                  required
-                >
-                <span class="form-error" id="firstName-error"></span>
+                <label for="currentPassword" class="form-label">Current Password</label>
+                <div class="password-input-wrapper">
+                  <input 
+                    type="password" 
+                    id="currentPassword" 
+                    name="currentPassword" 
+                    class="form-input" 
+                    placeholder="Enter current password"
+                    required
+                  >
+                  <button type="button" class="password-toggle" onclick="togglePasswordField('currentPassword')">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
+                    </svg>
+                  </button>
+                </div>
+                <span class="form-error" id="currentPassword-error"></span>
               </div>
               
               <div class="form-group">
-                <label for="lastName" class="form-label">Last Name</label>
-                <input 
-                  type="text" 
-                  id="lastName" 
-                  name="lastName" 
-                  class="form-input" 
-                  disabled
-                  required
-                >
-                <span class="form-error" id="lastName-error"></span>
+                <label for="newPassword" class="form-label">New Password</label>
+                <div class="password-input-wrapper">
+                  <input 
+                    type="password" 
+                    id="newPassword" 
+                    name="newPassword" 
+                    class="form-input" 
+                    placeholder="Enter new password"
+                    required
+                  >
+                  <button type="button" class="password-toggle" onclick="togglePasswordField('newPassword')">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="password-requirements">
+                  <small>Password must contain at least 8 characters, 1 uppercase, 1 lowercase, and 1 number</small>
+                </div>
+                <span class="form-error" id="newPassword-error"></span>
               </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="email" class="form-label">Email Address</label>
-              <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                class="form-input" 
-                disabled
-                required
-              >
-              <span class="form-error" id="email-error"></span>
-            </div>
-            
-            <div class="form-group">
-              <label for="phone" class="form-label">Phone Number</label>
-              <input 
-                type="tel" 
-                id="phone" 
-                name="phone" 
-                class="form-input" 
-                placeholder="+234 XXX XXX XXXX"
-                disabled
-              >
-              <span class="form-error" id="phone-error"></span>
-            </div>
-            
-            <div class="form-actions hidden" id="profile-form-actions">
-              <button type="button" class="btn btn-outline" onclick="cancelEditMode()">Cancel</button>
-              <button type="submit" class="btn btn-primary" id="save-profile-btn">
-                <span id="save-btn-text">Save Changes</span>
-                <span id="save-btn-loading" class="loading hidden"></span>
+              
+              <div class="form-group">
+                <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                <div class="password-input-wrapper">
+                  <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
+                    class="form-input" 
+                    placeholder="Confirm new password"
+                    required
+                  >
+                  <button type="button" class="password-toggle" onclick="togglePasswordField('confirmPassword')">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
+                    </svg>
+                  </button>
+                </div>
+                <span class="form-error" id="confirmPassword-error"></span>
+              </div>
+              
+              <button type="submit" class="btn btn-primary" id="change-password-btn">
+                <span id="password-btn-text">Change Password</span>
+                <span id="password-btn-loading" class="loading hidden"></span>
               </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Subscription Card -->
-        <div class="profile-card">
-          <div class="card-header">
-            <h2>Subscription</h2>
-          </div>
-          
-          <div class="subscription-info" id="subscription-info">
-            <div class="subscription-loading">
-              <div class="skeleton" style="height: 80px;"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Security Card -->
-        <div class="profile-card">
-          <div class="card-header">
-            <h2>Security</h2>
-          </div>
-          
-          <form id="password-form" class="profile-form">
-            <div class="form-group">
-              <label for="currentPassword" class="form-label">Current Password</label>
-              <div class="password-input-wrapper">
-                <input 
-                  type="password" 
-                  id="currentPassword" 
-                  name="currentPassword" 
-                  class="form-input" 
-                  placeholder="Enter current password"
-                  required
-                >
-                <button type="button" class="password-toggle" onclick="togglePasswordField('currentPassword')">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
-                  </svg>
-                </button>
-              </div>
-              <span class="form-error" id="currentPassword-error"></span>
-            </div>
-            
-            <div class="form-group">
-              <label for="newPassword" class="form-label">New Password</label>
-              <div class="password-input-wrapper">
-                <input 
-                  type="password" 
-                  id="newPassword" 
-                  name="newPassword" 
-                  class="form-input" 
-                  placeholder="Enter new password"
-                  required
-                >
-                <button type="button" class="password-toggle" onclick="togglePasswordField('newPassword')">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
-                  </svg>
-                </button>
-              </div>
-              <div class="password-requirements">
-                <small>Password must contain at least 8 characters, 1 uppercase, 1 lowercase, and 1 number</small>
-              </div>
-              <span class="form-error" id="newPassword-error"></span>
-            </div>
-            
-            <div class="form-group">
-              <label for="confirmPassword" class="form-label">Confirm New Password</label>
-              <div class="password-input-wrapper">
-                <input 
-                  type="password" 
-                  id="confirmPassword" 
-                  name="confirmPassword" 
-                  class="form-input" 
-                  placeholder="Confirm new password"
-                  required
-                >
-                <button type="button" class="password-toggle" onclick="togglePasswordField('confirmPassword')">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 12a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
-                  </svg>
-                </button>
-              </div>
-              <span class="form-error" id="confirmPassword-error"></span>
-            </div>
-            
-            <button type="submit" class="btn btn-primary" id="change-password-btn">
-              <span id="password-btn-text">Change Password</span>
-              <span id="password-btn-loading" class="loading hidden"></span>
-            </button>
-          </form>
-        </div>
-
-        <!-- Account Actions Card -->
-        <div class="profile-card">
-          <div class="card-header">
-            <h2>Account Actions</h2>
-          </div>
-          
-          <div class="account-actions">
-            <button class="btn btn-outline btn-block" data-logout>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M3 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 1 1-2 0V4H5v12h10v-2a1 1 0 1 1 2 0v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3z"/>
-                <path d="M13 10l4-4-4-4v3H7a1 1 0 1 0 0 2h6v3z"/>
-              </svg>
-              Logout
-            </button>
+            </form>
           </div>
         </div>
 

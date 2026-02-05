@@ -1,10 +1,9 @@
 /**
  * Profile Page JavaScript
- * Handles user profile display, editing, and account management
- * UPDATED: Now uses /payments/me endpoint for subscription status
+ * Handles user profile display and account management
+ * UPDATED: Removed personal info editing, added expandable sections, auto-refresh username
  */
 
-let isEditMode = false;
 let originalProfileData = {};
 
 // Load profile data on page load
@@ -12,10 +11,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadProfile();
   await loadSubscriptionInfo();
   setupEventListeners();
+  
+  // Initialize sections as collapsed by default
+  collapseAllSections();
 });
 
 /**
- * Load user profile data
+ * Load user profile data with automatic refresh if username is empty
  */
 async function loadProfile() {
   try {
@@ -29,9 +31,17 @@ async function loadProfile() {
     // Get user from auth service
     let user = authService.getCurrentUser();
     
-    // If no cached user, try to load from API
-    if (!user) {
+    // If no cached user OR username is empty, try to load from API
+    if (!user || !user.userName || user.userName.trim() === '') {
+      console.log('Username empty or no cached user, attempting refresh...');
       user = await authService.loadCurrentUser();
+      
+      // If still no username after refresh, try one more time after a delay
+      if (user && (!user.userName || user.userName.trim() === '')) {
+        console.log('Username still empty, waiting and retrying...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        user = await authService.loadCurrentUser();
+      }
     }
     
     if (!user) {
@@ -68,7 +78,6 @@ function displayProfileData(user) {
   const userName = user.userName || user.username || user.user_name || '';
   const userId = user.userId || user.user_id || '';
   const userEmail = user.email || '';
-  const userAvatar = user.avatar || user.avatarUrl || user.avatar_url || '';
   
   // Split username into first and last name if needed
   const nameParts = userName.split(' ');
@@ -83,12 +92,6 @@ function displayProfileData(user) {
   // Update avatar initials
   const initials = getInitials(firstName, lastName, userName);
   document.getElementById('avatar-initials').textContent = initials;
-  
-  // Update form fields
-  document.getElementById('firstName').value = firstName;
-  document.getElementById('lastName').value = lastName;
-  document.getElementById('email').value = userEmail;
-  document.getElementById('phone').value = user.phone || user.phone_number || '';
   
   // Store normalized data
   originalProfileData = {
@@ -122,13 +125,12 @@ function getInitials(firstName, lastName, userName) {
 
 /**
  * Load subscription information
- * UPDATED: Now uses /payments/me endpoint instead of /subscription/status
  */
 async function loadSubscriptionInfo() {
   const container = document.getElementById('subscription-info');
   
   try {
-    // Use new payment endpoint: GET /payments/me
+    // Use payment endpoint: GET /payments/me
     const response = await apiService.get(CONFIG.ENDPOINTS.PAYMENTS.ME);
     
     if (response.success && response.data) {
@@ -139,24 +141,12 @@ async function loadSubscriptionInfo() {
     
   } catch (error) {
     console.error('Failed to load subscription:', error);
-    // Default to free subscription on error
     displayFreeSubscription();
   }
 }
 
 /**
- * Display subscription information from /payments/me response
- * Response format:
- * {
- *   "active": true,
- *   "plan": "monthly",
- *   "expires_at": "2026-02-23T00:00:00Z",
- *   "days_remaining": 30,
- *   "in_grace_period": false,
- *   "subscription_type": "auto_recurring",
- *   "auto_renew_enabled": true,
- *   "payment_provider": "flutterwave"
- * }
+ * Display subscription information with animations
  */
 function displaySubscriptionInfo(subscription) {
   const container = document.getElementById('subscription-info');
@@ -179,42 +169,118 @@ function displaySubscriptionInfo(subscription) {
       'N/A';
     
     const daysRemaining = subscription.days_remaining || 0;
-    const autoRenew = subscription.auto_renew_enabled ? 'Yes' : 'No';
+    const autoRenew = subscription.auto_renew_enabled ? 'Enabled' : 'Disabled';
+    const subscriptionType = subscription.subscription_type === 'auto_recurring' ? 
+      'Auto-Renewing' : 'One-Time Payment';
     const inGracePeriod = subscription.in_grace_period || false;
     
     container.innerHTML = `
-      <div class="subscription-details">
-        <div class="subscription-row">
-          <span class="label">Current Plan:</span>
-          <span class="value">${planName}</span>
+      <div class="subscription-details-grid">
+        <div class="subscription-stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Status</div>
+            <div class="stat-value status-active">Active</div>
+          </div>
         </div>
-        <div class="subscription-row">
-          <span class="label">Status:</span>
-          <span class="value status-active">Active</span>
+
+        <div class="subscription-stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9h18"/>
+              <path d="M9 21V9"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Current Plan</div>
+            <div class="stat-value">${planName}</div>
+          </div>
         </div>
-        <div class="subscription-row">
-          <span class="label">Expires:</span>
-          <span class="value">${expiresAt}</span>
+
+        <div class="subscription-stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Expires</div>
+            <div class="stat-value">${expiresAt}</div>
+          </div>
         </div>
-        <div class="subscription-row">
-          <span class="label">Days Remaining:</span>
-          <span class="value">${daysRemaining} days</span>
+
+        <div class="subscription-stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Days Remaining</div>
+            <div class="stat-value">${daysRemaining}</div>
+          </div>
         </div>
-        <div class="subscription-row">
-          <span class="label">Auto-Renew:</span>
-          <span class="value">${autoRenew}</span>
+
+        <div class="subscription-stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Type</div>
+            <div class="stat-value">${subscriptionType}</div>
+          </div>
         </div>
-        ${inGracePeriod ? `
-        <div class="subscription-row">
-          <span class="label" style="color: #f59e0b;">Grace Period:</span>
-          <span class="value" style="color: #f59e0b;">Active</span>
+
+        <div class="subscription-stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+              <polyline points="17 6 23 6 23 12"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <div class="stat-label">Auto-Renew</div>
+            <div class="stat-value">${autoRenew}</div>
+          </div>
         </div>
-        ` : ''}
       </div>
+      
+      ${inGracePeriod ? `
+      <div class="grace-period-notice">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <span>Your subscription is in grace period</span>
+      </div>
+      ` : ''}
+      
       <div class="subscription-actions">
         <a href="./subscription.html" class="btn btn-outline btn-block">Manage Subscription</a>
       </div>
     `;
+    
+    // Add animation class
+    setTimeout(() => {
+      const cards = container.querySelectorAll('.subscription-stat-card');
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.style.animation = 'slideInUp 0.5s ease forwards';
+        }, index * 100);
+      });
+    }, 100);
   } else {
     displayFreeSubscription();
   }
@@ -232,17 +298,41 @@ function displayFreeSubscription() {
   
   container.innerHTML = `
     <div class="subscription-details">
-      <div class="subscription-row">
-        <span class="label">Current Plan:</span>
-        <span class="value">Free</span>
-      </div>
-      <div class="subscription-message">
-        <p>You're currently on the Free plan. Upgrade to Pro to unlock:</p>
-        <ul>
-          <li>✓ Premium bet codes</li>
-          <li>✓ AI-powered predictions</li>
-          <li>✓ Ad-free experience</li>
-          <li>✓ Priority support</li>
+      <div class="free-plan-card">
+        <div class="free-plan-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#a51d2a" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4"/>
+            <path d="M12 8h.01"/>
+          </svg>
+        </div>
+        <h3>You're on the Free Plan</h3>
+        <p>Upgrade to Pro to unlock premium features:</p>
+        <ul class="feature-list">
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Premium bet codes</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>AI-powered predictions</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Ad-free experience</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Priority support</span>
+          </li>
         </ul>
       </div>
     </div>
@@ -253,119 +343,48 @@ function displayFreeSubscription() {
 }
 
 /**
+ * Toggle expandable section
+ */
+function toggleSection(sectionId) {
+  const content = document.getElementById(`${sectionId}-content`);
+  const icon = document.getElementById(`${sectionId}-icon`);
+  const card = content.closest('.expandable-card');
+  
+  const isExpanded = content.classList.contains('expanded');
+  
+  if (isExpanded) {
+    content.classList.remove('expanded');
+    card.classList.remove('expanded');
+    icon.style.transform = 'rotate(0deg)';
+  } else {
+    content.classList.add('expanded');
+    card.classList.add('expanded');
+    icon.style.transform = 'rotate(180deg)';
+  }
+}
+
+/**
+ * Collapse all sections initially
+ */
+function collapseAllSections() {
+  const sections = ['subscription', 'security'];
+  sections.forEach(sectionId => {
+    const content = document.getElementById(`${sectionId}-content`);
+    const icon = document.getElementById(`${sectionId}-icon`);
+    if (content && icon) {
+      content.classList.remove('expanded');
+      icon.style.transform = 'rotate(0deg)';
+    }
+  });
+}
+
+/**
  * Setup event listeners
  */
 function setupEventListeners() {
-  // Profile form submission
-  const profileForm = document.getElementById('profile-form');
-  profileForm.addEventListener('submit', handleProfileUpdate);
-  
   // Password form submission
   const passwordForm = document.getElementById('password-form');
   passwordForm.addEventListener('submit', handlePasswordChange);
-}
-
-/**
- * Toggle edit mode for profile
- */
-function toggleEditMode() {
-  isEditMode = !isEditMode;
-  
-  const inputs = document.querySelectorAll('#profile-form input:not([type="email"])');
-  const formActions = document.getElementById('profile-form-actions');
-  const editBtn = document.getElementById('edit-profile-btn');
-  
-  inputs.forEach(input => {
-    input.disabled = !isEditMode;
-  });
-  
-  formActions.classList.toggle('hidden', !isEditMode);
-  editBtn.innerHTML = isEditMode ? 'Cancel' : `
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-    </svg>
-    Edit
-  `;
-  
-  if (isEditMode) {
-    editBtn.onclick = cancelEditMode;
-  } else {
-    editBtn.onclick = toggleEditMode;
-  }
-}
-
-/**
- * Cancel edit mode
- */
-function cancelEditMode() {
-  isEditMode = false;
-  displayProfileData(originalProfileData);
-  
-  const formActions = document.getElementById('profile-form-actions');
-  const editBtn = document.getElementById('edit-profile-btn');
-  
-  formActions.classList.add('hidden');
-  editBtn.innerHTML = `
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-    </svg>
-    Edit
-  `;
-  editBtn.onclick = toggleEditMode;
-  
-  clearErrors();
-}
-
-/**
- * Handle profile update
- */
-async function handleProfileUpdate(e) {
-  e.preventDefault();
-  
-  // Clear previous errors
-  clearErrors();
-  clearAlerts();
-  
-  // Get form data
-  const firstName = document.getElementById('firstName').value.trim();
-  const lastName = document.getElementById('lastName').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  
-  // Validate
-  if (!firstName || !lastName) {
-    showAlert('First name and last name are required', 'error');
-    return;
-  }
-  
-  // Set loading state
-  setLoadingState('save-profile-btn', 'save-btn-text', 'save-btn-loading', true);
-  
-  try {
-    const response = await authService.updateProfile({
-      firstName,
-      lastName,
-      phone
-    });
-    
-    if (response.success) {
-      showAlert('Profile updated successfully', 'success');
-      originalProfileData = { ...originalProfileData, firstName, lastName, phone };
-      
-      // Update display
-      displayProfileData({ ...originalProfileData });
-      
-      // Exit edit mode
-      setTimeout(() => {
-        cancelEditMode();
-      }, 1500);
-    }
-    
-  } catch (error) {
-    console.error('Profile update error:', error);
-    showAlert(error.message || 'Failed to update profile', 'error');
-  } finally {
-    setLoadingState('save-profile-btn', 'save-btn-text', 'save-btn-loading', false);
-  }
 }
 
 /**

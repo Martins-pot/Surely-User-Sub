@@ -1,6 +1,38 @@
 /**
- * Profile Page Styles - Matching Reference Design
+ * Profile Page Styles - Enhanced with Expandable Sections and Animations
  */
+
+/* ============================
+   ANIMATIONS
+   ============================ */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
 
 /* ============================
    HEADER NAVIGATION
@@ -27,19 +59,6 @@ nav {
   text-decoration: none;
   display: flex;
   align-items: center;
-}
-
-.logo {
-  width: 50px;
-  height: 50px;
-  background: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  font-weight: bold;
-  color: #a51d2a;
 }
 
 .logo-img {
@@ -115,13 +134,14 @@ nav {
   border-radius: 20px;
   border: 1px solid #E0E0E0;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  animation: slideInUp 0.5s ease;
 }
 
 .profile-avatar-large {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: #a51d2a;
+  background: linear-gradient(135deg, #a51d2a 0%, #d32f2f 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,6 +195,7 @@ nav {
   height: 8px;
   border-radius: 50%;
   background: #808080;
+  animation: pulse 2s infinite;
 }
 
 .status-pro .status-dot {
@@ -188,29 +209,58 @@ nav {
   gap: 2rem;
 }
 
-/* Profile Card */
-.profile-card {
+/* ============================
+   EXPANDABLE CARDS
+   ============================ */
+.expandable-card {
   background: white;
   border-radius: 20px;
   border: 1px solid #E0E0E0;
   overflow: hidden;
   transition: all 0.3s ease;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  animation: slideInUp 0.5s ease;
 }
 
-.profile-card:hover {
+.expandable-card:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.card-header {
+.expandable-card.expanded {
+  border-color: #a51d2a;
+}
+
+.expandable-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid #E0E0E0;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s;
+  border-bottom: 1px solid transparent;
 }
 
-.card-header h2 {
+.expandable-card.expanded .expandable-header {
+  border-bottom-color: #E0E0E0;
+  background: rgba(165, 29, 42, 0.02);
+}
+
+.expandable-header:hover {
+  background: rgba(165, 29, 42, 0.05);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-left svg {
+  color: #a51d2a;
+}
+
+.header-left h2 {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
@@ -219,16 +269,162 @@ nav {
   text-transform: uppercase;
 }
 
-/* Profile Form */
-.profile-form {
+.expand-icon {
+  transition: transform 0.3s ease;
+  color: #666;
+}
+
+.expandable-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.expandable-content.expanded {
+  max-height: 2000px;
+}
+
+/* ============================
+   SUBSCRIPTION INFO
+   ============================ */
+.subscription-info {
   padding: 2rem;
 }
 
-.form-row {
+.subscription-details-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.subscription-stat-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid #E0E0E0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s;
+  opacity: 0;
+}
+
+.subscription-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #666;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.stat-value.status-active {
+  color: #10b981;
+}
+
+.grace-period-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  color: #f59e0b;
   margin-bottom: 1.5rem;
+  animation: fadeIn 0.5s ease;
+}
+
+.grace-period-notice svg {
+  flex-shrink: 0;
+}
+
+/* Free Plan Card */
+.free-plan-card {
+  text-align: center;
+  padding: 2rem;
+}
+
+.free-plan-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: rgba(165, 29, 42, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.free-plan-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.free-plan-card p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #333;
+  font-size: 1rem;
+}
+
+.feature-list svg {
+  flex-shrink: 0;
+}
+
+/* ============================
+   FORM STYLES
+   ============================ */
+.profile-form {
+  padding: 2rem;
 }
 
 .form-group {
@@ -263,11 +459,6 @@ nav {
   box-shadow: 0 0 0 3px rgba(165, 29, 42, 0.1);
 }
 
-.form-input:disabled {
-  background: #f5f5f5;
-  cursor: not-allowed;
-}
-
 .form-input::placeholder {
   color: #808080;
 }
@@ -277,18 +468,6 @@ nav {
   font-size: 0.875rem;
   margin-top: 0.5rem;
   display: block;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid #E0E0E0;
-}
-
-.form-actions .btn {
-  flex: 1;
 }
 
 .password-input-wrapper {
@@ -307,6 +486,7 @@ nav {
   padding: 0;
   display: flex;
   align-items: center;
+  transition: color 0.3s;
 }
 
 .password-toggle:hover {
@@ -326,95 +506,18 @@ nav {
   line-height: 1.4;
 }
 
-/* Subscription Info */
-.subscription-info {
-  padding: 2rem;
-}
-
-.subscription-loading {
-  min-height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.subscription-details {
-  margin-bottom: 2rem;
-}
-
-.subscription-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
-  border-bottom: 1px solid #E0E0E0;
-}
-
-.subscription-row:last-child {
-  border-bottom: none;
-}
-
-.subscription-row .label {
-  color: #666;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.subscription-row .value {
-  color: #333;
-  font-weight: 600;
-}
-
-.subscription-row .value.status-active {
-  color: #4CAF50;
-}
-
-.subscription-row .value.status-cancelled {
-  color: #FF9800;
-}
-
-.subscription-row .value.status-expired {
-  color: #F44336;
-}
-
-.subscription-message {
-  background: rgba(165, 29, 42, 0.05);
-  border: 1px solid rgba(165, 29, 42, 0.2);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.subscription-message p {
-  color: #333;
-  margin: 0 0 1rem 0;
-  font-weight: 600;
-}
-
-.subscription-message ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.subscription-message li {
-  color: #666;
-  padding: 0.5rem 0;
-  font-size: 0.875rem;
-}
-
+/* ============================
+   SUBSCRIPTION ACTIONS
+   ============================ */
 .subscription-actions {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-/* Account Actions */
-.account-actions {
-  padding: 2rem;
-}
-
-/* Buttons */
+/* ============================
+   BUTTONS
+   ============================ */
 .btn-primary {
   background: #000;
   color: white;
@@ -429,6 +532,7 @@ nav {
   justify-content: center;
   gap: 0.5rem;
   transition: all 0.3s;
+  text-decoration: none;
 }
 
 .btn-primary:hover {
@@ -450,6 +554,7 @@ nav {
   justify-content: center;
   gap: 0.5rem;
   transition: all 0.3s;
+  text-decoration: none;
 }
 
 .btn-outline:hover {
@@ -457,56 +562,13 @@ nav {
   color: white;
 }
 
-/* Responsive Design */
-@media (max-width: 968px) {
-  .nav-links {
-    display: none;
-  }
-  
-  header {
-    padding: 1rem;
-  }
+.btn-block {
+  width: 100%;
 }
 
-@media (max-width: 768px) {
-  .profile-container {
-    padding: 120px 1rem 2rem;
-  }
-  
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-    padding: 1.5rem;
-  }
-  
-  .profile-avatar-large {
-    width: 100px;
-    height: 100px;
-    font-size: 2rem;
-  }
-  
-  .profile-header-info h1 {
-    font-size: 2rem;
-  }
-  
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .profile-form {
-    padding: 1.5rem;
-  }
-  
-  .subscription-info {
-    padding: 1.5rem;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-}
-
-/* Loading States */
+/* ============================
+   LOADING STATES
+   ============================ */
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -577,4 +639,74 @@ footer {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
+}
+
+/* ============================
+   RESPONSIVE DESIGN
+   ============================ */
+@media (max-width: 968px) {
+  .nav-links {
+    display: none;
+  }
+  
+  header {
+    padding: 1rem;
+  }
+  
+  .navbar-actions {
+    gap: 0.5rem;
+  }
+  
+  .download-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 120px 1rem 2rem;
+  }
+  
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+  
+  .profile-avatar-large {
+    width: 100px;
+    height: 100px;
+    font-size: 2rem;
+  }
+  
+  .profile-header-info h1 {
+    font-size: 2rem;
+  }
+  
+  .subscription-details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-form {
+    padding: 1.5rem;
+  }
+  
+  .subscription-info {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-container {
+    padding: 100px 1rem 2rem;
+  }
+  
+  .header-left h2 {
+    font-size: 1.25rem;
+  }
+  
+  .expandable-header {
+    padding: 1rem 1.5rem;
+  }
 }

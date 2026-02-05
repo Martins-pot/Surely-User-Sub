@@ -29,6 +29,7 @@
         <li><a href="./profile.html">Profile</a></li>
       </ul>
       <div class="navbar-actions">
+        <a href="../index.html" class="download-btn">Go to Home</a>
         <button class="download-btn" data-logout>Logout</button>
       </div>
     </nav>
@@ -38,20 +39,27 @@
   <div class="profile-container">
     <div class="container">
       
-      <!-- Page Header -->
-      <div class="section-header">
-        <h2>UPGRADE TO PRO</h2>
-        <p>Choose the plan that works best for you. Test mode - use test cards for payment.</p>
-      </div>
-
       <!-- Alert Container -->
       <div id="alert-container"></div>
 
       <!-- Payment Status Section (shown after redirect) -->
       <div id="payment-status-container" class="hidden"></div>
 
+      <!-- Current Subscription Section - Always shown at top -->
+      <div id="current-subscription-section" class="subscription-status-card">
+        <div id="current-subscription-content">
+          <div class="skeleton" style="height: 200px;"></div>
+        </div>
+      </div>
+
       <!-- Pricing Plans Section -->
       <div id="pricing-section">
+        <!-- Page Header -->
+        <div class="section-header">
+          <h2>UPGRADE TO PRO</h2>
+          <p>Choose the plan that works best for you. Select your preferred payment type below.</p>
+        </div>
+
         <!-- Loading State -->
         <div id="pricing-loading" class="plans-grid">
           <div class="plan-card skeleton" style="height: 400px;"></div>
@@ -62,51 +70,50 @@
         <div id="plans-container" class="plans-grid hidden"></div>
       </div>
 
-      <!-- Current Subscription Section -->
-      <div id="current-subscription-section" class="profile-card" style="margin-top: 3rem;">
-        <div class="card-header">
-          <h2>Current Subscription</h2>
-          <button class="btn btn-secondary btn-sm" onclick="loadCurrentSubscription()">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M8 3v10m0 0l-3-3m3 3l3-3"/>
-            </svg>
-            Refresh
-          </button>
-        </div>
+    </div>
+  </div>
+
+  <!-- Payment Type Modal -->
+  <div id="payment-type-modal" class="modal hidden">
+    <div class="modal-overlay" onclick="closePaymentTypeModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Select Payment Type</h3>
+        <button class="modal-close" onclick="closePaymentTypeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">Choose how you'd like to handle your subscription:</p>
         
-        <div id="current-subscription-content">
-          <div class="skeleton" style="height: 80px;"></div>
-        </div>
-      </div>
-
-      <!-- Test Mode Info -->
-      <div class="profile-card" style="margin-top: 2rem; background: rgba(220, 20, 60, 0.1); border: 1px solid rgba(220, 20, 60, 0.3);">
-        <div style="padding: 2rem;">
-          <h3 style="color: #a51d2a; margin-bottom: 1rem;">🧪 Test Mode Information</h3>
-          <p style="margin-bottom: 1rem; color: #333;">This is running in TEST MODE. Use these test cards:</p>
-          
-          <div style="margin-bottom: 1.5rem;">
-            <h4 style="margin-bottom: 0.5rem; color: #333;">Flutterwave (International):</h4>
-            <ul style="list-style: none; padding-left: 0; color: #666;">
-              <li>Card: <strong style="color: #333;">4242 4242 4242 4242</strong></li>
-              <li>Expiry: Any future date</li>
-              <li>CVV: Any 3 digits</li>
-              <li>Result: ✅ Success</li>
-            </ul>
+        <div class="payment-type-options">
+          <div class="payment-type-card" onclick="selectPaymentType('auto-renew')">
+            <div class="payment-type-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6"/>
+                <path d="M1 20v-6h6"/>
+                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+              </svg>
+            </div>
+            <div class="payment-type-info">
+              <h4>Auto-Renewing</h4>
+              <p>Automatically renews at the end of each period. Cancel anytime.</p>
+              <span class="recommended-badge">Recommended</span>
+            </div>
           </div>
           
-          <div>
-            <h4 style="margin-bottom: 0.5rem; color: #333;">Paystack (Nigeria):</h4>
-            <ul style="list-style: none; padding-left: 0; color: #666;">
-              <li>Card: <strong style="color: #333;">4084 0840 8408 4081</strong></li>
-              <li>Expiry: Any future date</li>
-              <li>CVV: Any 3 digits</li>
-              <li>Result: ✅ Success</li>
-            </ul>
+          <div class="payment-type-card" onclick="selectPaymentType('one-time')">
+            <div class="payment-type-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                <line x1="2" y1="10" x2="22" y2="10"/>
+              </svg>
+            </div>
+            <div class="payment-type-info">
+              <h4>One-Time Payment</h4>
+              <p>Pay once for the selected period. Manual renewal required.</p>
+            </div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 

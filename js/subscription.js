@@ -1,19 +1,13 @@
 /**
  * Subscription Page JavaScript
- * Implements the complete payment flow following the backend contract exactly
- * 
- * Flow:
- * 1. Detect user country (no backend call)
- * 2. Fetch pricing: GET /payments/pricing?country_code=US
- * 3. Display plans dynamically
- * 4. Initiate payment: POST /payments/initiate
- * 5. Redirect to provider
- * 6. Handle redirect and verify: GET /payments/status/{reference}
- * 7. Grant premium access on success
+ * Complete payment flow with auto-renew and one-time payment options
+ * UPDATED: Removed test mode references, added payment type selection, improved UI
  */
 
 let currentCountry = null;
 let pricingData = null;
+let selectedPlan = null;
+let currentSubscription = null;
 
 // Page load
 document.addEventListener('DOMContentLoaded', async () => {
@@ -23,19 +17,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // Load current subscription first
+  await loadCurrentSubscription();
+
   // Check if we're returning from a payment redirect
   await handlePaymentRedirect();
 
   // Detect country and load pricing
   await initializeSubscriptionPage();
-
-  // Load current subscription status
-  await loadCurrentSubscription();
 });
 
 /**
  * Step 1: Detect User Country
- * No backend call - use IP detection or default
  */
 async function detectUserCountry() {
   try {
@@ -57,7 +50,7 @@ async function detectUserCountry() {
  */
 async function initializeSubscriptionPage() {
   try {
-    // Step 1: Detect country (no API call to backend)
+    // Step 1: Detect country
     currentCountry = await detectUserCountry();
     console.log('Detected country:', currentCountry);
 
@@ -75,17 +68,12 @@ async function initializeSubscriptionPage() {
 
 /**
  * Step 2: Fetch Pricing
- * GET /payments/pricing?country_code=US
- * Auth: No
  */
 async function fetchPricing(countryCode) {
   try {
     showLoading(true);
 
-    // Build URL with query parameter
     const endpoint = `${CONFIG.ENDPOINTS.PAYMENTS.PRICING}?country_code=${countryCode}`;
-    
-    // No authentication required for pricing endpoint
     const response = await apiService.get(endpoint, false);
 
     if (response.success && response.data) {
@@ -99,7 +87,7 @@ async function fetchPricing(countryCode) {
   } catch (error) {
     console.error('Pricing fetch error:', error);
     
-    // Try fallback to default country if different
+    // Try fallback to default country
     if (countryCode !== CONFIG.DEFAULT_COUNTRY) {
       console.log('Retrying with default country...');
       currentCountry = CONFIG.DEFAULT_COUNTRY;
@@ -120,7 +108,7 @@ async function fetchPricing(countryCode) {
 
 /**
  * Step 3: Display Pricing Plans
- * Render plans exactly as returned by API - DO NOT hardcode
+ * Hide active plan if user is already subscribed
  */
 function displayPricingPlans() {
   if (!pricingData || !pricingData.plans) {
@@ -131,11 +119,14 @@ function displayPricingPlans() {
   const container = document.getElementById('plans-container');
   const plans = pricingData.plans;
 
-  // Build HTML for each plan
+  // Check if user has active subscription
+  const hasActiveSubscription = currentSubscription && currentSubscription.active;
+  const activePlan = hasActiveSubscription ? currentSubscription.plan : null;
+
   let plansHTML = '';
 
   // Monthly plan
-  if (plans.monthly) {
+  if (plans.monthly && (!hasActiveSubscription || activePlan !== 'monthly')) {
     const monthly = plans.monthly;
     plansHTML += `
       <div class="plan-card">
@@ -153,15 +144,15 @@ function displayPricingPlans() {
           <li>✓ Discussions with top puntas</li>
         </ul>
         
-        <button class="btn btn-outline btn-block" onclick="initiatePayment('monthly', true)">
-          Upgrade to Monthly Pro
+        <button class="btn btn-outline btn-block" onclick="showPaymentTypeModal('monthly')">
+          Choose Monthly Plan
         </button>
       </div>
     `;
   }
 
   // Yearly plan
-  if (plans.yearly) {
+  if (plans.yearly && (!hasActiveSubscription || activePlan !== 'yearly')) {
     const yearly = plans.yearly;
     const monthlyEquivalent = yearly.amount / 12;
     const formattedMonthly = `${pricingData.currency} ${monthlyEquivalent.toFixed(2)}`;
@@ -183,33 +174,84 @@ function displayPricingPlans() {
           <li>✓ Priority customer support</li>
         </ul>
         
-        <button class="btn btn-outline btn-block" onclick="initiatePayment('yearly', true)">
-          Upgrade to Annual Pro
+        <button class="btn btn-outline btn-block" onclick="showPaymentTypeModal('yearly')">
+          Choose Annual Plan
         </button>
       </div>
     `;
   }
 
-  container.innerHTML = plansHTML;
+  // If user has active subscription and it matches available plans
+  if (hasActiveSubscription && plansHTML === '') {
+    container.innerHTML = `
+      <div class="active-plan-notice">
+        <div class="active-plan-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h3>Your Plan is Active!</h3>
+        <p>You're currently subscribed to the <strong>${activePlan.charAt(0).toUpperCase() + activePlan.slice(1)}</strong> plan.</p>
+        <p>Manage your subscription from your profile or return home to enjoy premium features.</p>
+        <div class="active-plan-actions">
+          <a href="./profile.html" class="btn btn-primary">Go to Profile</a>
+          <a href="../index.html" class="btn btn-outline">Go to Home</a>
+        </div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = plansHTML;
+  }
+
   container.classList.remove('hidden');
   document.getElementById('pricing-loading').classList.add('hidden');
 }
 
 /**
+ * Show payment type selection modal
+ */
+function showPaymentTypeModal(plan) {
+  selectedPlan = plan;
+  const modal = document.getElementById('payment-type-modal');
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Close payment type modal
+ */
+function closePaymentTypeModal() {
+  const modal = document.getElementById('payment-type-modal');
+  modal.classList.add('hidden');
+  document.body.style.overflow = '';
+  selectedPlan = null;
+}
+
+/**
+ * Select payment type and initiate payment
+ */
+function selectPaymentType(paymentType) {
+  const enableAutoRenew = paymentType === 'auto-renew';
+  closePaymentTypeModal();
+  initiatePayment(selectedPlan, enableAutoRenew);
+}
+
+/**
  * Step 4: Initiate Payment
- * POST /payments/initiate
- * Auth: Yes (Bearer token)
  */
 async function initiatePayment(plan, enableAutoRenew = true) {
   try {
     clearAlerts();
 
-    // Confirm with user
+    // Get plan details
     const planName = pricingData.plans[plan]?.name || plan;
     const amount = pricingData.plans[plan]?.display || pricingData.plans[plan]?.amount;
+    const paymentType = enableAutoRenew ? 'Auto-Renewing' : 'One-Time Payment';
     
+    // Confirm with user
     const confirmed = confirm(
-      `Subscribe to ${planName} for ${amount}?\n\nThis is TEST MODE - use test card to complete payment.`
+      `Subscribe to ${planName} for ${amount}?\nPayment Type: ${paymentType}\n\nClick OK to proceed to payment.`
     );
     
     if (!confirmed) return;
@@ -226,18 +268,17 @@ async function initiatePayment(plan, enableAutoRenew = true) {
 
     console.log('Initiating payment with:', requestBody);
 
-    // Make API call - requires authentication
+    // Make API call
     const response = await apiService.post(
       CONFIG.ENDPOINTS.PAYMENTS.INITIATE,
       requestBody,
-      true // Authentication required
+      true
     );
 
     if (response.success && response.data) {
       const paymentData = response.data;
       console.log('Payment initiated:', paymentData);
 
-      // Extract authorization URL
       const authUrl = paymentData.authorization_url;
       
       if (!authUrl) {
@@ -248,7 +289,7 @@ async function initiatePayment(plan, enableAutoRenew = true) {
       sessionStorage.setItem('pending_payment_reference', paymentData.reference);
       sessionStorage.setItem('pending_payment_plan', plan);
 
-      // Step 5: Redirect to payment provider
+      // Redirect to payment provider
       showAlert('Redirecting to payment provider...', 'success');
       
       setTimeout(() => {
@@ -266,11 +307,9 @@ async function initiatePayment(plan, enableAutoRenew = true) {
 }
 
 /**
- * Step 6 & 7: Handle Payment Redirect
- * Called when user returns from payment provider
+ * Handle Payment Redirect
  */
 async function handlePaymentRedirect() {
-  // Check URL parameters for payment reference
   const urlParams = new URLSearchParams(window.location.search);
   const reference = urlParams.get('reference') || 
                     urlParams.get('tx_ref') || 
@@ -278,7 +317,6 @@ async function handlePaymentRedirect() {
                     sessionStorage.getItem('pending_payment_reference');
 
   if (!reference) {
-    // No payment redirect, normal page load
     return;
   }
 
@@ -298,14 +336,12 @@ async function handlePaymentRedirect() {
     </div>
   `;
 
-  // Step 8: Verify payment status
+  // Verify payment status
   await verifyPaymentStatus(reference);
 }
 
 /**
- * Step 8: Verify Payment Status
- * GET /payments/status/{reference}
- * Auth: Yes
+ * Verify Payment Status
  */
 async function verifyPaymentStatus(reference) {
   try {
@@ -313,8 +349,6 @@ async function verifyPaymentStatus(reference) {
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     const endpoint = `${CONFIG.ENDPOINTS.PAYMENTS.STATUS}/${reference}`;
-    
-    // Requires authentication
     const response = await apiService.get(endpoint, true);
 
     console.log('Payment verification response:', response);
@@ -322,30 +356,18 @@ async function verifyPaymentStatus(reference) {
     if (response.success && response.data) {
       const status = response.data.status;
       
-      // Step 9: Handle different statuses
       if (status === 'success') {
-        // Payment successful!
         displayPaymentSuccess(response.data);
-        
-        // Clear stored reference
         sessionStorage.removeItem('pending_payment_reference');
         sessionStorage.removeItem('pending_payment_plan');
-        
-        // Reload subscription status
         await loadCurrentSubscription();
         
       } else if (status === 'pending') {
-        // Payment is still processing
         displayPaymentPending(response.data);
-        
-        // Retry verification after delay
         setTimeout(() => verifyPaymentStatus(reference), 5000);
         
       } else {
-        // Payment failed
         displayPaymentFailed(response.data);
-        
-        // Clear stored reference
         sessionStorage.removeItem('pending_payment_reference');
         sessionStorage.removeItem('pending_payment_plan');
       }
@@ -360,18 +382,23 @@ async function verifyPaymentStatus(reference) {
 }
 
 /**
- * Step 9: Display Payment Results
+ * Display Payment Results
  */
 function displayPaymentSuccess(data) {
   const container = document.getElementById('payment-status-container');
   container.innerHTML = `
-    <div class="profile-card" style="text-align: center; padding: 3rem; background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981;">
-      <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
-      <h2 style="color: #10b981; margin-bottom: 1rem;">Payment Successful!</h2>
-      <p style="margin-bottom: 2rem;">${securityManager.sanitizeHTML(data.message || 'Your subscription has been activated.')}</p>
-      <div style="display: flex; gap: 1rem; justify-content: center;">
+    <div class="payment-result-card payment-success">
+      <div class="payment-result-icon">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h2>Payment Successful!</h2>
+      <p>${securityManager.sanitizeHTML(data.message || 'Your subscription has been activated.')}</p>
+      <div class="payment-result-actions">
         <a href="./profile.html" class="btn btn-primary">Go to Profile</a>
-        <button class="btn btn-secondary" onclick="location.reload()">View Plans</button>
+        <button class="btn btn-outline" onclick="location.reload()">View Plans</button>
       </div>
     </div>
   `;
@@ -380,9 +407,9 @@ function displayPaymentSuccess(data) {
 function displayPaymentPending(data) {
   const container = document.getElementById('payment-status-container');
   container.innerHTML = `
-    <div class="profile-card" style="text-align: center; padding: 3rem; background: rgba(251, 191, 36, 0.1); border: 2px solid #f59e0b;">
-      <div class="loading" style="margin: 0 auto 1rem;"></div>
-      <h3 style="color: #f59e0b; margin-bottom: 1rem;">Payment Processing...</h3>
+    <div class="payment-result-card payment-pending">
+      <div class="loading" style="margin: 0 auto 2rem;"></div>
+      <h3>Payment Processing...</h3>
       <p>${securityManager.sanitizeHTML(data.message || 'Waiting for payment confirmation...')}</p>
       <p style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.7;">This may take a few moments. Please don't close this page.</p>
     </div>
@@ -392,11 +419,17 @@ function displayPaymentPending(data) {
 function displayPaymentFailed(data) {
   const container = document.getElementById('payment-status-container');
   container.innerHTML = `
-    <div class="profile-card" style="text-align: center; padding: 3rem; background: rgba(239, 68, 68, 0.1); border: 2px solid #ef4444;">
-      <div style="font-size: 4rem; margin-bottom: 1rem;">❌</div>
-      <h2 style="color: #ef4444; margin-bottom: 1rem;">Payment Failed</h2>
-      <p style="margin-bottom: 2rem;">${securityManager.sanitizeHTML(data.message || 'Your payment could not be processed.')}</p>
-      <div style="display: flex; gap: 1rem; justify-content: center;">
+    <div class="payment-result-card payment-failed">
+      <div class="payment-result-icon">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+      </div>
+      <h2>Payment Failed</h2>
+      <p>${securityManager.sanitizeHTML(data.message || 'Your payment could not be processed.')}</p>
+      <div class="payment-result-actions">
         <button class="btn btn-primary" onclick="location.reload()">Try Again</button>
         <a href="./profile.html" class="btn btn-outline">Back to Profile</a>
       </div>
@@ -407,11 +440,17 @@ function displayPaymentFailed(data) {
 function displayPaymentError(error) {
   const container = document.getElementById('payment-status-container');
   container.innerHTML = `
-    <div class="profile-card" style="text-align: center; padding: 3rem; background: rgba(239, 68, 68, 0.1); border: 2px solid #ef4444;">
-      <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
-      <h2 style="color: #ef4444; margin-bottom: 1rem;">Verification Error</h2>
-      <p style="margin-bottom: 2rem;">We couldn't verify your payment status. Please contact support if you were charged.</p>
-      <div style="display: flex; gap: 1rem; justify-content: center;">
+    <div class="payment-result-card payment-error">
+      <div class="payment-result-icon">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <h2>Verification Error</h2>
+      <p>We couldn't verify your payment status. Please contact support if you were charged.</p>
+      <div class="payment-result-actions">
         <button class="btn btn-primary" onclick="location.reload()">Retry</button>
         <a href="./profile.html" class="btn btn-outline">Back to Profile</a>
       </div>
@@ -420,24 +459,20 @@ function displayPaymentError(error) {
 }
 
 /**
- * Check Current Subscription Status
- * GET /payments/me
- * Auth: Yes
+ * Load Current Subscription Status
  */
 async function loadCurrentSubscription() {
   const container = document.getElementById('current-subscription-content');
   
   try {
-    // Show loading state
-    container.innerHTML = '<div class="skeleton" style="height: 80px;"></div>';
+    container.innerHTML = '<div class="skeleton" style="height: 200px;"></div>';
 
-    // Fetch subscription status - requires authentication
     const response = await apiService.get(CONFIG.ENDPOINTS.PAYMENTS.ME, true);
 
     if (response.success && response.data) {
+      currentSubscription = response.data;
       displaySubscriptionStatus(response.data);
     } else {
-      // No active subscription
       displayNoSubscription();
     }
 
@@ -448,7 +483,7 @@ async function loadCurrentSubscription() {
 }
 
 /**
- * Display subscription status
+ * Display subscription status with animations
  */
 function displaySubscriptionStatus(subscription) {
   const container = document.getElementById('current-subscription-content');
@@ -458,49 +493,106 @@ function displaySubscriptionStatus(subscription) {
     return;
   }
 
-  // Parse expiry date
-  const expiresAt = subscription.expires_at ? new Date(subscription.expires_at) : null;
-  const expiryDate = expiresAt ? expiresAt.toLocaleDateString() : 'N/A';
+  const expiresAt = subscription.expires_at ? new Date(subscription.expires_at).toLocaleDateString() : 'N/A';
   const daysRemaining = subscription.days_remaining || 0;
+  const planName = subscription.plan ? (subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)) : 'Pro';
+  const subscriptionType = subscription.subscription_type === 'auto_recurring' ? 'Auto-Renewing' : 'One-Time Payment';
+  const autoRenew = subscription.auto_renew_enabled;
 
   container.innerHTML = `
-    <div class="subscription-details">
-      <div class="subscription-row">
-        <span class="label">Status:</span>
-        <span class="value" style="color: #10b981;">✓ Active</span>
+    <div class="current-subscription-header">
+      <div class="subscription-status-badge">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <span>Active Subscription</span>
       </div>
-      <div class="subscription-row">
-        <span class="label">Plan:</span>
-        <span class="value">${securityManager.sanitizeHTML(subscription.plan || 'Pro')}</span>
+      <h3>Current Plan</h3>
+    </div>
+    
+    <div class="subscription-stats-grid">
+      <div class="sub-stat-card">
+        <div class="sub-stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M3 9h18"/>
+            <path d="M9 21V9"/>
+          </svg>
+        </div>
+        <div class="sub-stat-info">
+          <div class="sub-stat-label">Plan</div>
+          <div class="sub-stat-value">${planName}</div>
+        </div>
       </div>
-      <div class="subscription-row">
-        <span class="label">Expires:</span>
-        <span class="value">${expiryDate}</span>
+
+      <div class="sub-stat-card">
+        <div class="sub-stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div class="sub-stat-info">
+          <div class="sub-stat-label">Expires</div>
+          <div class="sub-stat-value">${expiresAt}</div>
+        </div>
       </div>
-      <div class="subscription-row">
-        <span class="label">Days Remaining:</span>
-        <span class="value">${daysRemaining} days</span>
+
+      <div class="sub-stat-card">
+        <div class="sub-stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div class="sub-stat-info">
+          <div class="sub-stat-label">Days Left</div>
+          <div class="sub-stat-value">${daysRemaining}</div>
+        </div>
       </div>
-      <div class="subscription-row">
-        <span class="label">Auto-Renew:</span>
-        <span class="value">${subscription.auto_renew_enabled ? '✓ Enabled' : '✗ Disabled'}</span>
+
+      <div class="sub-stat-card">
+        <div class="sub-stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M23 6l-9.5 9.5-5-5L1 18"/>
+            <polyline points="17 6 23 6 23 12"/>
+          </svg>
+        </div>
+        <div class="sub-stat-info">
+          <div class="sub-stat-label">Type</div>
+          <div class="sub-stat-value">${subscriptionType}</div>
+        </div>
       </div>
-      ${subscription.in_grace_period ? `
-      <div class="subscription-row">
-        <span class="label" style="color: #f59e0b;">Grace Period:</span>
-        <span class="value" style="color: #f59e0b;">Active</span>
-      </div>
-      ` : ''}
     </div>
   `;
+
+  // Add animation
+  setTimeout(() => {
+    const cards = container.querySelectorAll('.sub-stat-card');
+    cards.forEach((card, index) => {
+      setTimeout(() => {
+        card.style.animation = 'slideInUp 0.5s ease forwards';
+      }, index * 100);
+    });
+  }, 100);
 }
 
 function displayNoSubscription() {
   const container = document.getElementById('current-subscription-content');
   container.innerHTML = `
-    <div style="text-align: center; padding: 2rem;">
-      <p style="margin-bottom: 1rem; opacity: 0.7;">You don't have an active subscription.</p>
-      <p>Choose a plan above to get started!</p>
+    <div class="no-subscription-notice">
+      <div class="no-sub-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4"/>
+          <path d="M12 8h.01"/>
+        </svg>
+      </div>
+      <h3>No Active Subscription</h3>
+      <p>You don't have an active subscription. Choose a plan below to get started!</p>
     </div>
   `;
 }
@@ -528,14 +620,12 @@ function showAlert(message, type = 'info') {
     </div>
   `;
   
-  // Auto-dismiss after 5 seconds
   if (type === 'success' || type === 'info') {
     setTimeout(() => {
       container.innerHTML = '';
     }, 5000);
   }
   
-  // Scroll to alert
   container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
