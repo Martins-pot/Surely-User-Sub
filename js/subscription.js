@@ -1,7 +1,7 @@
 /**
  * Subscription Page JavaScript
  * Complete payment flow with auto-renew and one-time payment options
- * UPDATED: Removed test mode references, added payment type selection, improved UI
+ * UPDATED: Fixed 422 error with proper authentication and data validation
  */
 
 let currentCountry = null;
@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = './login.html';
     return;
   }
+
+  // Ensure user is loaded
+  await authService.loadCurrentUser();
 
   // Load current subscription first
   await loadCurrentSubscription();
@@ -242,10 +245,36 @@ function selectPaymentType(paymentType) {
 
 /**
  * Step 4: Initiate Payment
+ * FIXED: Proper authentication check and data validation
  */
 async function initiatePayment(plan, enableAutoRenew = true) {
   try {
     clearAlerts();
+
+    // Ensure user is authenticated
+    if (!securityManager.isAuthenticated()) {
+      showAlert('Please login to subscribe', 'error');
+      setTimeout(() => {
+        window.location.href = './login.html';
+      }, 1500);
+      return;
+    }
+
+    // Ensure current user is loaded
+    const currentUser = authService.getCurrentUser();
+    if (!currentUser) {
+      showAlert('Loading user profile...', 'info');
+      await authService.loadCurrentUser();
+      const retryUser = authService.getCurrentUser();
+      if (!retryUser) {
+        throw new Error('Unable to load user profile. Please refresh the page.');
+      }
+    }
+
+    // Validate we have pricing data
+    if (!pricingData || !pricingData.plans || !pricingData.plans[plan]) {
+      throw new Error('Pricing information not available. Please refresh the page.');
+    }
 
     // Get plan details
     const planName = pricingData.plans[plan]?.name || plan;
@@ -262,34 +291,44 @@ async function initiatePayment(plan, enableAutoRenew = true) {
     // Show loading
     showAlert('Initiating payment...', 'info');
 
-    // Prepare request body
+    // Prepare request body - ensure correct data types and format
     const requestBody = {
-      plan: plan,
-      country_code: currentCountry,
-      enable_auto_renew: enableAutoRenew
+      plan: plan.toLowerCase(), // Ensure lowercase: 'monthly' or 'yearly'
+      country_code: currentCountry.toUpperCase(), // Ensure uppercase: 'NG', 'US', etc.
+      enable_auto_renew: Boolean(enableAutoRenew) // Ensure boolean
     };
 
     console.log('Initiating payment with:', requestBody);
+    console.log('Auth token present:', !!securityManager.getToken());
 
-    // Make API call
+    // Make API call with explicit auth
     const response = await apiService.post(
       CONFIG.ENDPOINTS.PAYMENTS.INITIATE,
       requestBody,
-      true
+      true // Include authentication
     );
+
+    console.log('Payment initiation response:', response);
 
     if (response.success && response.data) {
       const paymentData = response.data;
-      console.log('Payment initiated:', paymentData);
-
-      const authUrl = paymentData.authorization_url;
+      
+      // Handle different response formats
+      const authUrl = paymentData.authorization_url || paymentData.authorizationUrl;
+      const reference = paymentData.reference || paymentData.payment_reference;
       
       if (!authUrl) {
-        throw new Error('No authorization URL received');
+        console.error('No authorization URL in response:', paymentData);
+        throw new Error('No authorization URL received from payment provider');
+      }
+
+      if (!reference) {
+        console.error('No reference in response:', paymentData);
+        throw new Error('No payment reference received');
       }
 
       // Store reference for later verification
-      sessionStorage.setItem('pending_payment_reference', paymentData.reference);
+      sessionStorage.setItem('pending_payment_reference', reference);
       sessionStorage.setItem('pending_payment_plan', plan);
 
       // Redirect to payment provider
@@ -300,12 +339,42 @@ async function initiatePayment(plan, enableAutoRenew = true) {
       }, 1000);
 
     } else {
-      throw new Error('Payment initiation failed');
+      // Log the full response for debugging
+      console.error('Payment initiation failed - Full response:', response);
+      
+      // Try to extract error message from various possible formats
+      const errorMessage = response?.data?.message || 
+                          response?.message || 
+                          response?.error?.message ||
+                          response?.error ||
+                          'Payment initiation failed';
+      
+      throw new Error(errorMessage);
     }
 
   } catch (error) {
     console.error('Payment initiation error:', error);
-    showAlert(error.message || 'Failed to initiate payment. Please try again.', 'error');
+    
+    // Provide more detailed error message
+    let errorMessage = 'Failed to initiate payment. ';
+    
+    if (error.message) {
+      errorMessage += error.message;
+    } else {
+      errorMessage += 'Please try again.';
+    }
+    
+    // If it's a 401/403, suggest re-login
+    if (error.message && (error.message.includes('401') || error.message.includes('403') || error.message.includes('Unauthorized'))) {
+      errorMessage = 'Your session has expired. Please login again.';
+      showAlert(errorMessage, 'error');
+      setTimeout(() => {
+        window.location.href = './login.html';
+      }, 2000);
+      return;
+    }
+    
+    showAlert(errorMessage, 'error');
   }
 }
 
