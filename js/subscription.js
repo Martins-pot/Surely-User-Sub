@@ -239,8 +239,9 @@ function closePaymentTypeModal() {
  */
 function selectPaymentType(paymentType) {
   const enableAutoRenew = paymentType === 'auto-renew';
-  closePaymentTypeModal();
-  initiatePayment(selectedPlan, enableAutoRenew);
+  const planToSubscribe = selectedPlan; // Save plan BEFORE closing modal
+  closePaymentTypeModal(); // This sets selectedPlan = null
+  initiatePayment(planToSubscribe, enableAutoRenew); // Use saved value
 }
 
 /**
