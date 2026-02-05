@@ -70,6 +70,30 @@
         <div id="plans-container" class="plans-grid hidden"></div>
       </div>
 
+      <!-- Payment History Section -->
+      <div id="payment-history-section" class="payment-history-card">
+        <div class="payment-history-header">
+          <div class="header-left">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            <h3>Payment History</h3>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadPaymentHistory()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+              <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+        
+        <div id="payment-history-content">
+          <div class="skeleton" style="height: 200px;"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 

@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Detect country and load pricing
   await initializeSubscriptionPage();
+  
+  // Load payment history
+  await loadPaymentHistory();
 });
 
 /**
@@ -593,6 +596,147 @@ function displayNoSubscription() {
       </div>
       <h3>No Active Subscription</h3>
       <p>You don't have an active subscription. Choose a plan below to get started!</p>
+    </div>
+  `;
+}
+
+/**
+ * Load Payment History
+ * GET /payments/history
+ * Auth: Yes
+ */
+async function loadPaymentHistory() {
+  const container = document.getElementById('payment-history-content');
+  
+  try {
+    // Show loading state
+    container.innerHTML = '<div class="skeleton" style="height: 200px;"></div>';
+
+    // Fetch payment history - requires authentication
+    const response = await apiService.get(CONFIG.ENDPOINTS.PAYMENTS.HISTORY, true);
+
+    if (response.success && response.data && response.data.length > 0) {
+      displayPaymentHistory(response.data);
+    } else {
+      displayNoPaymentHistory();
+    }
+
+  } catch (error) {
+    console.error('Failed to load payment history:', error);
+    displayNoPaymentHistory();
+  }
+}
+
+/**
+ * Display payment history
+ */
+function displayPaymentHistory(payments) {
+  const container = document.getElementById('payment-history-content');
+  
+  // Sort payments by date (newest first)
+  const sortedPayments = [...payments].sort((a, b) => {
+    const dateA = new Date(a.created_at || a.createdAt || 0);
+    const dateB = new Date(b.created_at || b.createdAt || 0);
+    return dateB - dateA;
+  });
+
+  let paymentsHTML = '<div class="payment-history-list">';
+
+  sortedPayments.forEach((payment, index) => {
+    const date = new Date(payment.created_at || payment.createdAt);
+    const formattedDate = date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const status = payment.status || 'pending';
+    const amount = payment.amount || 0;
+    const currency = payment.currency || 'USD';
+    const plan = payment.plan ? (payment.plan.charAt(0).toUpperCase() + payment.plan.slice(1)) : 'Plan';
+    const reference = payment.reference || payment.payment_reference || 'N/A';
+    const paymentType = payment.subscription_type === 'auto_recurring' ? 'Auto-Renewing' : 'One-Time Payment';
+    const provider = payment.payment_provider || payment.provider || 'N/A';
+
+    // Status badge color
+    let statusClass = 'status-pending';
+    let statusIcon = '⏳';
+    if (status === 'success' || status === 'completed') {
+      statusClass = 'status-success';
+      statusIcon = '✓';
+    } else if (status === 'failed' || status === 'declined') {
+      statusClass = 'status-failed';
+      statusIcon = '✗';
+    }
+
+    paymentsHTML += `
+      <div class="payment-history-item" style="animation-delay: ${index * 0.1}s">
+        <div class="payment-item-header">
+          <div class="payment-item-main">
+            <div class="payment-item-icon ${statusClass}">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+            </div>
+            <div class="payment-item-details">
+              <div class="payment-item-title">
+                <span class="payment-plan-name">${securityManager.sanitizeHTML(plan)} Plan</span>
+                <span class="payment-status-badge ${statusClass}">
+                  ${statusIcon} ${status.charAt(0).toUpperCase() + status.slice(1)}
+                </span>
+              </div>
+              <div class="payment-item-meta">
+                <span>${formattedDate}</span>
+                <span class="payment-meta-divider">•</span>
+                <span>${securityManager.sanitizeHTML(paymentType)}</span>
+                <span class="payment-meta-divider">•</span>
+                <span>${securityManager.sanitizeHTML(provider)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="payment-item-amount">
+            <span class="payment-amount-value">${securityManager.sanitizeHTML(currency)} ${amount.toFixed(2)}</span>
+          </div>
+        </div>
+        <div class="payment-item-reference">
+          <span class="reference-label">Reference:</span>
+          <span class="reference-value">${securityManager.sanitizeHTML(reference)}</span>
+        </div>
+      </div>
+    `;
+  });
+
+  paymentsHTML += '</div>';
+  container.innerHTML = paymentsHTML;
+
+  // Add animation
+  setTimeout(() => {
+    const items = container.querySelectorAll('.payment-history-item');
+    items.forEach(item => {
+      item.style.opacity = '1';
+      item.style.transform = 'translateY(0)';
+    });
+  }, 100);
+}
+
+/**
+ * Display no payment history message
+ */
+function displayNoPaymentHistory() {
+  const container = document.getElementById('payment-history-content');
+  container.innerHTML = `
+    <div class="no-payment-history">
+      <div class="no-history-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+          <line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+      </div>
+      <h4>No Payment History</h4>
+      <p>You haven't made any payments yet. Subscribe to a plan to get started!</p>
     </div>
   `;
 }
