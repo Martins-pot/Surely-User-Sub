@@ -1,7 +1,7 @@
 /**
  * Subscription Page JavaScript
  * Complete payment flow with auto-renew and one-time payment options
- * UPDATED: Fixed 422 error with proper authentication and data validation
+ * UPDATED: Added cancel subscription feature and improved error handling
  */
 
 let currentCountry = null;
@@ -556,7 +556,7 @@ async function loadCurrentSubscription() {
 }
 
 /**
- * Display subscription status with animations
+ * Display subscription status with animations and cancel button
  */
 function displaySubscriptionStatus(subscription) {
   const container = document.getElementById('current-subscription-content');
@@ -571,6 +571,9 @@ function displaySubscriptionStatus(subscription) {
   const planName = subscription.plan ? (subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)) : 'Pro';
   const subscriptionType = subscription.subscription_type === 'auto_recurring' ? 'Auto-Renewing' : 'One-Time Payment';
   const autoRenew = subscription.auto_renew_enabled;
+
+  // Show cancel button for auto-renewing subscriptions
+  const showCancelButton = subscription.subscription_type === 'auto_recurring' && autoRenew;
 
   container.innerHTML = `
     <div class="current-subscription-header">
@@ -640,6 +643,20 @@ function displaySubscriptionStatus(subscription) {
         </div>
       </div>
     </div>
+
+    ${showCancelButton ? `
+      <div class="subscription-actions">
+        <button class="btn-cancel-subscription" onclick="confirmCancelSubscription()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          Cancel Auto-Renewal
+        </button>
+        <p class="cancel-info">You'll retain access until ${expiresAt}</p>
+      </div>
+    ` : ''}
   `;
 
   // Add animation
@@ -651,6 +668,55 @@ function displaySubscriptionStatus(subscription) {
       }, index * 100);
     });
   }, 100);
+}
+
+/**
+ * Confirm cancellation with user
+ */
+function confirmCancelSubscription() {
+  const confirmed = confirm(
+    'Are you sure you want to cancel auto-renewal?\n\n' +
+    'Your subscription will remain active until the end of your current billing period, ' +
+    'but it will not renew automatically.\n\n' +
+    'You can re-subscribe at any time.'
+  );
+  
+  if (confirmed) {
+    cancelSubscription();
+  }
+}
+
+/**
+ * Cancel Subscription
+ * POST /payments/cancel
+ */
+async function cancelSubscription() {
+  try {
+    clearAlerts();
+    showAlert('Canceling subscription...', 'info');
+
+    const response = await apiService.post(
+      CONFIG.ENDPOINTS.PAYMENTS.CANCEL || '/payments/cancel',
+      {},
+      true // Requires authentication
+    );
+
+    if (response.success) {
+      showAlert('Subscription canceled successfully. You will have access until the end of your billing period.', 'success');
+      
+      // Reload subscription status after 1 second
+      setTimeout(async () => {
+        await loadCurrentSubscription();
+      }, 1000);
+      
+    } else {
+      throw new Error(response.message || 'Failed to cancel subscription');
+    }
+
+  } catch (error) {
+    console.error('Cancel subscription error:', error);
+    showAlert(error.message || 'Failed to cancel subscription. Please try again or contact support.', 'error');
+  }
 }
 
 function displayNoSubscription() {

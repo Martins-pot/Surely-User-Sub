@@ -1,6 +1,7 @@
 /**
  * Configuration file for Surely Frontend
  * Contains API endpoints, security settings, and app constants
+ * UPDATED: Added cancel subscription endpoint
  */
 
 const CONFIG = {
@@ -54,7 +55,8 @@ const CONFIG = {
       INITIATE: '/payments/initiate',      // POST - Start payment (requires auth)
       STATUS: '/payments/status',          // GET - Verify payment status (requires auth) - append /{reference}
       ME: '/payments/me',                  // GET - Check current subscription (requires auth)
-      HISTORY: '/payments/history'         // GET - Payment history (requires auth)
+      HISTORY: '/payments/history',        // GET - Payment history (requires auth)
+      CANCEL: '/payments/cancel'           // POST - Cancel subscription (requires auth)
     },
     // Legacy subscription endpoints (may be deprecated)
     SUBSCRIPTION: {

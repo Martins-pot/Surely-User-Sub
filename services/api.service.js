@@ -1,6 +1,7 @@
 /**
  * Centralized API Service for Surely
  * Handles all HTTP requests with security, error handling, and retry logic
+ * UPDATED: Improved error handling to prevent unwanted 404 redirects
  */
 
 class APIService {
@@ -35,6 +36,7 @@ class APIService {
 
   /**
    * Make HTTP request with timeout and retry logic
+   * UPDATED: Better error handling without auto-redirects
    */
   async makeRequest(url, options = {}, retryCount = 0) {
     const controller = new AbortController();
@@ -48,20 +50,56 @@ class APIService {
 
       clearTimeout(timeoutId);
 
+      // Parse response first to get error details
+      const contentType = response.headers.get('content-type');
+      let data;
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const textData = await response.text();
+        // Try to parse as JSON in case server didn't set correct content-type
+        try {
+          data = JSON.parse(textData);
+        } catch {
+          data = textData;
+        }
+      }
+
       // Handle different status codes
       if (response.status === 401) {
         // Unauthorized - token might be expired
-        securityManager.clearToken();
-        window.location.href = '/pages/login.html';
+        // Only clear token and redirect if we're on a protected page
+        const isProtectedRoute = window.location.pathname.includes('profile') || 
+                                 window.location.pathname.includes('subscription') ||
+                                 window.location.pathname.includes('dashboard');
+        
+        if (isProtectedRoute) {
+          securityManager.clearToken();
+          window.location.href = './login.html';
+        }
+        
         throw new Error('Session expired. Please login again.');
       }
 
       if (response.status === 403) {
-        throw new Error('Access forbidden. You do not have permission.');
+        throw new Error(data?.message || 'Access forbidden. You do not have permission.');
       }
 
       if (response.status === 404) {
-        throw new Error('Resource not found.');
+        // Don't navigate to 404 page, just throw error
+        throw new Error(data?.message || 'Resource not found.');
+      }
+
+      if (response.status === 400) {
+        // Bad request - validation errors, etc.
+        throw new Error(data?.message || 'Invalid request. Please check your input.');
+      }
+
+      if (response.status === 422) {
+        // Unprocessable entity - validation errors
+        const errorMessage = data?.message || 'Validation failed. Please check your input.';
+        throw new Error(errorMessage);
       }
 
       if (response.status >= 500) {
@@ -70,21 +108,11 @@ class APIService {
           await this.delay(this.retryDelay * (retryCount + 1));
           return this.makeRequest(url, options, retryCount + 1);
         }
-        throw new Error('Server error. Please try again later.');
-      }
-
-      // Parse response
-      const contentType = response.headers.get('content-type');
-      let data;
-      
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        data = await response.text();
+        throw new Error(data?.message || 'Server error. Please try again later.');
       }
 
       if (!response.ok) {
-        throw new Error(data.message || `Request failed with status ${response.status}`);
+        throw new Error(data?.message || `Request failed with status ${response.status}`);
       }
 
       return {

@@ -1,5 +1,6 @@
 /**
  * Login Page JavaScript
+ * UPDATED: Improved error handling to prevent 404 redirects
  */
 
 const loginForm = document.getElementById('login-form');
@@ -14,7 +15,7 @@ loginForm.addEventListener('submit', async (e) => {
 });
 
 /**
- * Handle login process
+ * Handle login process with improved error handling
  */
 async function handleLogin() {
   // Clear previous errors
@@ -59,12 +60,37 @@ async function handleLogin() {
         window.location.href = redirectPath;
       }, 1000);
     } else {
-      throw new Error('Login failed');
+      // Handle unsuccessful response without navigation
+      const errorMessage = response?.data?.message || 
+                          response?.message || 
+                          'Login failed. Please check your credentials.';
+      throw new Error(errorMessage);
     }
     
   } catch (error) {
     console.error('Login error:', error);
-    showAlert(error.message || 'Login failed. Please check your credentials.', 'error');
+    
+    // Improved error message handling
+    let errorMessage = 'Login failed. Please check your credentials and try again.';
+    
+    if (error.message) {
+      // Extract meaningful error message
+      if (error.message.includes('Invalid') || error.message.includes('incorrect')) {
+        errorMessage = 'Invalid email or password. Please try again.';
+      } else if (error.message.includes('404') || error.message.includes('not found')) {
+        errorMessage = 'Account not found. Please check your email or register.';
+      } else if (error.message.includes('network') || error.message.includes('timeout')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (error.message.includes('server') || error.message.includes('500')) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (!error.message.includes('status') && error.message.length < 100) {
+        // Use the actual error message if it's meaningful and not too long
+        errorMessage = error.message;
+      }
+    }
+    
+    // Display error message without navigation
+    showAlert(errorMessage, 'error');
     setLoading(false);
   }
 }
